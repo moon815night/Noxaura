@@ -1,0 +1,10 @@
+# Aider 本地状态（会话记录、输入历史、索引缓存）
+.aider*
+
+# 个人速查笔记，只留本地，不推到 GitHub
+怎么用.txt
+
+# 常见忽略项
+Thumbs.db
+desktop.ini
+__pycache__/
