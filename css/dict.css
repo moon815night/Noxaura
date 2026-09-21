@@ -163,7 +163,7 @@
   flex-wrap: wrap;
 }
 
-/* 圆润可爱按钮 - 实线最细外边框 + 中心径向渐变透明50% + 立体毛玻璃质感 */
+/* 圆润可爱按钮 - 实线最细外边框 + 从中间发散的线性渐变(透明度50%) + 立体毛玻璃质感 */
 .cute-btn {
   height: 30px;
   padding: 0 10px;
@@ -205,6 +205,20 @@
   height: 26px;
   padding: 0;
   border-radius: 8px;
+}
+
+/* 分组标头后的三个按钮：只保留图案，不要边框，不要背景色 */
+.group-actions .cute-btn-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.group-actions .cute-btn-icon:active {
+  background: rgba(119, 92, 85, 0.12) !important;
+  border-radius: 6px;
 }
 
 /* 列表容器 (支持 Flex 弹性滚动) */
