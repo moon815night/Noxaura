@@ -32,7 +32,7 @@
   border-radius: 20px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 16px 16px 20px 16px;
+  padding: 14px 16px 16px 16px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(46, 31, 25, 0.15);
@@ -47,14 +47,21 @@
 
 .dict-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px dashed rgba(119, 92, 85, 0.25);
   flex-shrink: 0;
 }
 
 .dict-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.dict-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -63,8 +70,24 @@
   color: var(--color-stroke-bubble);
 }
 
-.dict-header-left svg {
-  display: block;
+.btn-dict-back {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 8px;
+  background: var(--btn-grad-green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.1s, background 0.15s;
+}
+
+.btn-dict-back:active {
+  transform: scale(0.93);
+  background: var(--btn-grad-green-active);
 }
 
 .btn-dict-close {
@@ -82,7 +105,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 10px;
   flex-shrink: 0;
 }
 
@@ -93,12 +116,12 @@
 
 .dict-search-input {
   width: 100%;
-  height: 38px;
+  height: 36px;
   background: rgba(255, 255, 255, 0.7);
   border: 1.2px solid var(--color-input-border);
   border-radius: 12px;
   padding: 0 12px 0 34px;
-  font-size: 13.5px;
+  font-size: 13px;
   color: var(--color-text-main);
   outline: none;
 }
@@ -123,66 +146,115 @@
 .dict-actions-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-/* 圆润可爱无边框图标按钮 */
+/* 圆润可爱按钮 - 浅绿渐变与浅棕渐变 */
 .cute-btn {
-  height: 32px;
-  padding: 0 12px;
+  height: 30px;
+  padding: 0 10px;
   border: none;
-  border-radius: 10px;
-  background-color: var(--color-dict-btn-bg);
+  border-radius: 9px;
+  background: var(--btn-grad-green);
   color: var(--color-stroke-main);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s, background-color 0.15s;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s, opacity 0.15s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .cute-btn:active {
   transform: scale(0.95);
-  background-color: var(--color-accent-green);
+  background: var(--btn-grad-green-active);
 }
 
 .cute-btn.danger {
-  background-color: #ffd8d8;
-  color: #702020;
+  background: var(--btn-grad-brown);
+  color: var(--color-stroke-main);
 }
 
 .cute-btn.danger:active {
-  background-color: #f7b5b5;
+  background: var(--btn-grad-brown-active);
 }
 
 .cute-btn-icon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border-radius: 8px;
 }
 
-/* 列表容器 (可滚) */
+/* 列表容器 (完美滚动条) */
 .dict-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  margin-top: 12px;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
   padding-right: 4px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.dict-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dict-body::-webkit-scrollbar-thumb {
+  background: rgba(119, 92, 85, 0.25);
+  border-radius: 4px;
+}
+
+.dict-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 自定义复选框 */
+.dict-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.4px solid var(--color-stroke-bubble);
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  outline: none;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.dict-checkbox:checked {
+  background-color: var(--color-accent-green);
+  border-color: var(--color-stroke-bubble);
+}
+
+.dict-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--color-stroke-main);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 /* 分组卡片 */
 .group-card {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   border: 1.2px solid rgba(119, 92, 85, 0.3);
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;
 }
@@ -191,15 +263,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  background: rgba(230, 244, 235, 0.5);
+  padding: 8px 10px;
+  background: rgba(230, 244, 235, 0.55);
   user-select: none;
+  gap: 8px;
 }
 
 .group-title-wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
   flex: 1;
   min-width: 0;
@@ -215,7 +288,7 @@
 }
 
 .group-name {
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--color-text-main);
   white-space: nowrap;
@@ -228,8 +301,8 @@
   font-weight: 600;
   color: #5d4842;
   background: rgba(119, 92, 85, 0.12);
-  padding: 2px 7px;
-  border-radius: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -237,24 +310,30 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-left: 8px;
 }
 
 /* 分组内容区域 */
 .group-body {
-  padding: 10px 12px;
+  padding: 8px 10px 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .group-card.collapsed .group-body {
   display: none;
 }
 
+.group-sub-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
 .group-search-input {
-  width: 100%;
-  height: 30px;
+  flex: 1;
+  height: 28px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid var(--color-input-border);
   border-radius: 8px;
@@ -262,7 +341,6 @@
   font-size: 12px;
   color: var(--color-text-main);
   outline: none;
-  margin-bottom: 4px;
 }
 
 .card-item {
@@ -272,7 +350,7 @@
   background: #ffffff;
   border: 1px solid rgba(119, 92, 85, 0.15);
   border-radius: 8px;
-  padding: 6px 10px;
+  padding: 6px 8px;
   gap: 8px;
 }
 
@@ -281,15 +359,6 @@
   color: var(--color-text-main);
   word-break: break-all;
   flex: 1;
-}
-
-.card-tag {
-  font-size: 10px;
-  color: #775c55;
-  background: #eef7f2;
-  padding: 2px 6px;
-  border-radius: 4px;
-  flex-shrink: 0;
 }
 
 .card-actions {
@@ -306,7 +375,7 @@
   padding: 30px 0;
 }
 
-/* 通用简易 Modal */
+/* 通用 modal */
 .dict-modal {
   position: absolute;
   top: 0;
@@ -331,19 +400,19 @@
 
 .dict-modal-content {
   width: 100%;
-  max-width: 380px;
+  max-width: 360px;
   background: #fbfefc;
   border-radius: 16px;
-  padding: 18px;
+  padding: 16px;
   border: 1.5px solid var(--color-stroke-bubble);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .dict-modal-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--color-text-main);
 }

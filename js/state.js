@@ -68,6 +68,13 @@
       saveGroups(groups);
     },
 
+    deleteGroups(groupIds) {
+      if (!Array.isArray(groupIds) || groupIds.length === 0) return;
+      const idSet = new Set(groupIds);
+      groups = groups.filter(g => !idSet.has(g.id));
+      saveGroups(groups);
+    },
+
     deleteAllGroups() {
       groups = [];
       saveGroups(groups);
@@ -131,6 +138,15 @@
       const grp = groups.find(g => g.id === groupId);
       if (grp) {
         grp.items = grp.items.filter(item => item.id !== cardId);
+        saveGroups(groups);
+      }
+    },
+
+    deleteCards(groupId, cardIds) {
+      const grp = groups.find(g => g.id === groupId);
+      if (grp && Array.isArray(cardIds) && cardIds.length > 0) {
+        const idSet = new Set(cardIds);
+        grp.items = grp.items.filter(item => !idSet.has(item.id));
         saveGroups(groups);
       }
     },

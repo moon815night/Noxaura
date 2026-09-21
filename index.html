@@ -149,13 +149,23 @@
   <!-- 六、絮语（词库管理）全屏/半全屏面板 -->
   <div class="dict-overlay" id="dict-overlay">
     <div class="dict-panel">
-      <!-- 头部：图标 + 标题 + 关闭按钮 -->
+      <!-- 头部：图标 + 标题 + 关闭按钮 + 返回键 -->
       <div class="dict-header">
         <div class="dict-header-left">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z"/>
-          </svg>
-          <span>絮语</span>
+          <div class="dict-title-row">
+            <!-- 统一采用设置页同款双层描边书本图标 -->
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>絮语</span>
+          </div>
+          <!-- 图标之下，虚线之上的返回键 ＜ (填充背景，无边框，大小与打叉键相当) -->
+          <button class="btn-dict-back" id="btn-back-dict" aria-label="返回上一页">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
         </div>
         <button class="btn-dict-close" id="btn-close-dict" aria-label="关闭絮语">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.2" stroke-linecap="round">
@@ -172,7 +182,7 @@
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <input type="text" class="dict-search-input" id="dict-search-input" placeholder="搜索全部字卡（并显示所属分组）...">
+          <input type="text" class="dict-search-input" id="dict-search-input" placeholder="搜索全部字卡...">
         </div>
 
         <div class="dict-actions-bar">
@@ -185,6 +195,13 @@
             </button>
           </div>
           <div class="dict-actions-right">
+            <button class="cute-btn danger" id="btn-delete-selected-groups" title="批量删除勾选的分组">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              删除选中分组
+            </button>
             <button class="cute-btn" id="btn-export-cards" title="导出字卡文本">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>

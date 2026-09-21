@@ -7,14 +7,22 @@
   // 记录分组收起/展开状态 { [groupId]: boolean } (true 代表收起)
   const collapsedMap = {};
 
+  // 选中的分组集合 Set<groupId>
+  const selectedGroups = new Set();
+
+  // 选中的字卡集合 { [groupId]: Set<cardId> }
+  const selectedCardsMap = {};
+
   document.addEventListener('DOMContentLoaded', () => {
     const btnOpenDict = document.getElementById('btn-open-dict');
     const dictOverlay = document.getElementById('dict-overlay');
     const btnCloseDict = document.getElementById('btn-close-dict');
+    const btnBackDict = document.getElementById('btn-back-dict');
     const dictListContainer = document.getElementById('dict-list-container');
     const dictSearchInput = document.getElementById('dict-search-input');
 
     const btnAddGroup = document.getElementById('btn-add-group');
+    const btnDeleteSelectedGroups = document.getElementById('btn-delete-selected-groups');
     const btnDeleteAll = document.getElementById('btn-delete-all-groups');
     const btnExport = document.getElementById('btn-export-cards');
 
@@ -31,17 +39,22 @@
       });
     }
 
-    // 关闭絮语子页面
+    // 关闭/返回 絮语子页面
+    function closeDictSubpage() {
+      dictOverlay.classList.remove('show');
+    }
+
     if (btnCloseDict) {
-      btnCloseDict.addEventListener('click', () => {
-        dictOverlay.classList.remove('show');
-      });
+      btnCloseDict.addEventListener('click', closeDictSubpage);
+    }
+    if (btnBackDict) {
+      btnBackDict.addEventListener('click', closeDictSubpage);
     }
 
     // 点击遮罩空白处关闭
     dictOverlay.addEventListener('click', (e) => {
       if (e.target === dictOverlay) {
-        dictOverlay.classList.remove('show');
+        closeDictSubpage();
       }
     });
 
@@ -64,11 +77,27 @@
       });
     }
 
+    // 批量删除选中的分组
+    if (btnDeleteSelectedGroups) {
+      btnDeleteSelectedGroups.addEventListener('click', () => {
+        if (selectedGroups.size === 0) {
+          alertModal('请先勾选需要删除的分组');
+          return;
+        }
+        showConfirmModal('确认删除', `确定要删除选中的 ${selectedGroups.size} 个分组及其所有字卡吗？`, () => {
+          global.DictState.deleteGroups(Array.from(selectedGroups));
+          selectedGroups.clear();
+          renderDictList();
+        });
+      });
+    }
+
     // 批量清空所有分组
     if (btnDeleteAll) {
       btnDeleteAll.addEventListener('click', () => {
         showConfirmModal('确认清空', '确定要删除所有分组和字卡吗？此操作不可撤销。', () => {
           global.DictState.deleteAllGroups();
+          selectedGroups.clear();
           renderDictList();
         });
       });
@@ -99,6 +128,12 @@
         const groupSearchInputVal = (document.getElementById(`search_grp_${group.id}`)?.value || '').trim().toLowerCase();
         const isCollapsed = !!collapsedMap[group.id];
 
+        // 初始化组内多选集合
+        if (!selectedCardsMap[group.id]) {
+          selectedCardsMap[group.id] = new Set();
+        }
+        const selectedCards = selectedCardsMap[group.id];
+
         // 过滤字卡
         let filteredItems = group.items.filter((item) => {
           const matchesGlobal = !globalSearchText || item.text.toLowerCase().includes(globalSearchText);
@@ -119,6 +154,20 @@
         // 标头
         const header = document.createElement('div');
         header.className = 'group-header';
+
+        // 分组复选框
+        const groupCheckbox = document.createElement('input');
+        groupCheckbox.type = 'checkbox';
+        groupCheckbox.className = 'dict-checkbox';
+        groupCheckbox.checked = selectedGroups.has(group.id);
+        groupCheckbox.title = '勾选分组以批量删除';
+        groupCheckbox.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            selectedGroups.add(group.id);
+          } else {
+            selectedGroups.delete(group.id);
+          }
+        });
 
         const titleWrap = document.createElement('div');
         titleWrap.className = 'group-title-wrap';
@@ -165,6 +214,7 @@
           e.stopPropagation();
           showConfirmModal('删除分组', `确认删除分组“${group.name}”及其所有内容吗？`, () => {
             global.DictState.deleteGroup(group.id);
+            selectedGroups.delete(group.id);
             renderDictList();
           });
         });
@@ -173,12 +223,17 @@
         actions.appendChild(btnAddCards);
         actions.appendChild(btnDelGrp);
 
+        header.appendChild(groupCheckbox);
         header.appendChild(titleWrap);
         header.appendChild(actions);
 
         // 分组内容体
         const body = document.createElement('div');
         body.className = 'group-body';
+
+        // 组内搜索 & 组内批量删除工具栏
+        const subToolbar = document.createElement('div');
+        subToolbar.className = 'group-sub-toolbar';
 
         const groupSearchInput = document.createElement('input');
         groupSearchInput.type = 'text';
@@ -190,7 +245,25 @@
           renderDictList();
         });
 
-        body.appendChild(groupSearchInput);
+        const btnDelSelectedCards = document.createElement('button');
+        btnDelSelectedCards.className = 'cute-btn danger';
+        btnDelSelectedCards.style.cssText = 'height: 28px; padding: 0 8px; font-size: 11.5px;';
+        btnDelSelectedCards.textContent = '删除选中词条';
+        btnDelSelectedCards.addEventListener('click', () => {
+          if (selectedCards.size === 0) {
+            alertModal('请先勾选本组内需要删除的字卡');
+            return;
+          }
+          showConfirmModal('确认删除', `确定删除本组选中的 ${selectedCards.size} 条字卡吗？`, () => {
+            global.DictState.deleteCards(group.id, Array.from(selectedCards));
+            selectedCards.clear();
+            renderDictList();
+          });
+        });
+
+        subToolbar.appendChild(groupSearchInput);
+        subToolbar.appendChild(btnDelSelectedCards);
+        body.appendChild(subToolbar);
 
         if (filteredItems.length === 0) {
           const emptyDiv = document.createElement('div');
@@ -202,12 +275,22 @@
             const itemEl = document.createElement('div');
             itemEl.className = 'card-item';
 
-            let itemContent = `<span class="card-text">${escapeHtml(item.text)}</span>`;
-            if (globalSearchText) {
-              itemContent += `<span class="card-tag">属于: ${escapeHtml(group.name)}</span>`;
-            }
+            const itemCheckbox = document.createElement('input');
+            itemCheckbox.type = 'checkbox';
+            itemCheckbox.className = 'dict-checkbox';
+            itemCheckbox.checked = selectedCards.has(item.id);
+            itemCheckbox.addEventListener('change', (e) => {
+              if (e.target.checked) {
+                selectedCards.add(item.id);
+              } else {
+                selectedCards.delete(item.id);
+              }
+            });
 
-            itemEl.innerHTML = itemContent;
+            // 取消全局搜索时显示的“属于: 分组名”标签，仅保留文本内容
+            const textEl = document.createElement('span');
+            textEl.className = 'card-text';
+            textEl.textContent = item.text;
 
             const itemActions = document.createElement('div');
             itemActions.className = 'card-actions';
@@ -229,11 +312,15 @@
             const btnDelCard = createCuteIconBtn('trash', '删除词条', true);
             btnDelCard.addEventListener('click', () => {
               global.DictState.deleteCard(group.id, item.id);
+              selectedCards.delete(item.id);
               renderDictList();
             });
 
             itemActions.appendChild(btnEditCard);
             itemActions.appendChild(btnDelCard);
+
+            itemEl.appendChild(itemCheckbox);
+            itemEl.appendChild(textEl);
             itemEl.appendChild(itemActions);
 
             body.appendChild(itemEl);
@@ -264,9 +351,9 @@
         svgPath = `<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`;
       }
 
-      const strokeColor = isDanger ? '#702020' : 'var(--color-stroke-main)';
+      const strokeColor = 'var(--color-stroke-main)';
       btn.innerHTML = `
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           ${svgPath}
         </svg>
       `;
