@@ -134,7 +134,9 @@
 
       groups.forEach((group) => {
         const groupSearchInputVal = (document.getElementById(`search_grp_${group.id}`)?.value || '').trim().toLowerCase();
-        const isCollapsed = !!collapsedMap[group.id];
+
+        // 默认分组内容为收起状态（如果未手动切换过，则默认为 true）
+        const isCollapsed = collapsedMap[group.id] !== undefined ? !!collapsedMap[group.id] : true;
 
         // 初始化组内多选集合
         if (!selectedCardsMap[group.id]) {
@@ -188,7 +190,7 @@
         `;
 
         titleWrap.addEventListener('click', () => {
-          collapsedMap[group.id] = !collapsedMap[group.id];
+          collapsedMap[group.id] = !isCollapsed;
           renderDictList();
         });
 
