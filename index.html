@@ -21,7 +21,12 @@
       <div class="contact-info">
         <div class="contact-name">顾时夜</div>
         <div class="status-bar">
-          <div class="phone-icon"></div>
+          <!-- 参考 iPhone 6 外形 SVG 手机图标（含听筒和圆形 Home 键） -->
+          <svg class="phone-icon-svg" width="9" height="14" viewBox="0 0 10 16" fill="none" stroke="#2e1f19" stroke-width="1.1">
+            <rect x="0.8" y="0.8" width="8.4" height="14.4" rx="2" />
+            <line x1="3.8" y1="2" x2="6.2" y2="2" stroke-linecap="round" />
+            <circle cx="5" cy="13.2" r="0.9" fill="#2e1f19" />
+          </svg>
           <span>在线</span>
         </div>
       </div>
@@ -29,13 +34,13 @@
     <div class="top-right">
       <!-- 月亮图标 -->
       <button class="icon-btn" aria-label="月亮">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#eaffd5"/>
         </svg>
       </button>
       <!-- 设置键 -->
       <button class="icon-btn" id="btn-settings" aria-label="设置">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="2" stroke-linecap="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="2" stroke-linecap="round">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
@@ -48,10 +53,9 @@
   <main class="chat-content" id="chat-content">
     <!-- 对方消息示例 -->
     <div class="msg-row opponent">
-      <div class="avatar">顾</div>
+      <div class="avatar"></div>
       <div class="bubble-wrapper">
         <div class="bubble">你在做什么？</div>
-        <!-- 气泡虚线外框：d 由 js/ui.js 按实际宽高动态绘制，这里留空即可 -->
         <svg class="bubble-svg">
           <path d="" />
         </svg>
@@ -63,12 +67,9 @@
   <footer class="bottom-bar">
     <!-- 1. 泡泡键 -->
     <button class="btn-bubbles" aria-label="泡泡键">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.7" stroke-linecap="round">
-        <!-- 左侧大泡泡 -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.7" stroke-linecap="round">
         <circle cx="8" cy="13" r="5" fill="#eaffd5"/>
-        <!-- 右上最小泡泡 -->
         <circle cx="17" cy="7" r="2.5" fill="#eaffd5"/>
-        <!-- 右下稍大泡泡 -->
         <circle cx="16" cy="16" r="3.5" fill="#eaffd5"/>
       </svg>
     </button>
@@ -81,38 +82,36 @@
 
     <!-- 4. 发送键 -->
     <button class="btn-send" id="btn-send" aria-label="发送">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <line x1="22" y1="2" x2="11" y2="13"/>
         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
       </svg>
     </button>
   </footer>
 
-  <!-- 五、设置面板遮罩 -->
+  <!-- 五、全屏设置面板遮罩 -->
   <div class="settings-overlay" id="settings-overlay">
     <div class="settings-panel">
       <div class="settings-grid">
         <!-- 占位按钮 1 -->
         <button class="placeholder-btn" aria-label="选项1">
-          <svg width="32" height="32" viewBox="0 0 24 24">
-            <!-- 白色粗描边 -->
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- 深棕黑色细线条 -->
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         <!-- 占位按钮 2 -->
         <button class="placeholder-btn" aria-label="选项2">
-          <svg width="32" height="32" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         <!-- 占位按钮 3 -->
         <button class="placeholder-btn" aria-label="选项3">
-          <svg width="32" height="32" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="6"/>
-            <path d="M12 8v4l3 3" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="5"/>
+            <path d="M12 8v4l3 3" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
             <circle cx="12" cy="12" r="9" fill="none" stroke="#2e1f19" stroke-width="1.8"/>
             <path d="M12 8v4l3 3" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
@@ -122,8 +121,7 @@
   </div>
 </div>
 
-<!-- JS 引入（普通脚本 + defer，保证双击 index.html 也能正常运行）
-     注意：不要改成 type="module"，file:// 协议下会被浏览器拦死 -->
+<!-- JS 引入 -->
 <script src="js/ui.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>

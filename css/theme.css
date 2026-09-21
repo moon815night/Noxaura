@@ -7,7 +7,7 @@
   --bg-gradient-100: #fbfefc;
 
   --color-primary-green: #dcfae2;
-  --color-bar-bg: #eaffd5;
+  --color-bar-bg: #e2f4fc;
   --color-text-main: #2e1f19;
   --color-stroke-main: #2e1f19;
   --color-stroke-bubble: #775c55;
@@ -15,7 +15,7 @@
   --color-bubble-me: #d5eae3;
   --color-bubble-opponent: #f2fbfc;
 
-  --color-avatar-me-bg: #ffdce5;
+  --color-avatar-me-bg: #ffecf0;
   --color-avatar-opponent-bg: #000000;
   --color-avatar-opponent-text: #eaffd5;
 
@@ -25,9 +25,8 @@
 
   --color-send-disabled-bg: #e2eee5;
 
-  --color-settings-bg: rgba(234, 255, 213, 0.70);
-  --color-settings-shadow: rgba(46, 31, 25, 0.15);
-  --color-settings-overlay: rgba(0, 0, 0, 0.25);
+  --color-settings-shadow: rgba(46, 31, 25, 0.1);
+  --color-settings-overlay: rgba(0, 0, 0, 0.2);
   --color-btn-active-bg: rgba(46, 31, 25, 0.07);
 
   /* 尺寸与布局参数 */
