@@ -1,7 +1,7 @@
 /**
  * 动态计算并更新消息气泡 SVG 虚线外框路径
  */
-export function updateBubbleSVG(wrapper) {
+function updateBubbleSVG(wrapper) {
   const bubble = wrapper.querySelector('.bubble');
   const svg = wrapper.querySelector('.bubble-svg');
   const path = svg.querySelector('path');
@@ -49,21 +49,21 @@ export function updateBubbleSVG(wrapper) {
 /**
  * 刷新页面中所有气泡的路径
  */
-export function refreshAllBubbles() {
+function refreshAllBubbles() {
   document.querySelectorAll('.bubble-wrapper').forEach(updateBubbleSVG);
 }
 
 /**
  * 聊天滚动到底部
  */
-export function scrollToBottom(chatContent) {
+function scrollToBottom(chatContent) {
   chatContent.scrollTop = chatContent.scrollHeight;
 }
 
 /**
  * 生成并添加一条新消息到界面
  */
-export function appendMessage(chatContent, text, isMe = true) {
+function appendMessage(chatContent, text, isMe = true) {
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
 

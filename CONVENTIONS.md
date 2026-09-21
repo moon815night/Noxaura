@@ -29,7 +29,19 @@ assets/
 ```
 
 **硬性规则：**
-1. `index.html` 里用 `<link rel="stylesheet" href="css/xxx.css">` 引入样式，用 `<script type="module" src="js/main.js"></script>` 引入脚本。
+1. `index.html` 里用 `<link rel="stylesheet" href="css/xxx.css">` 引入样式，
+   用**普通脚本 + defer** 按顺序引入 js，例如：
+
+   ```html
+   <script src="js/ui.js" defer></script>
+   <script src="js/main.js" defer></script>
+   ```
+
+   ⚠️ **严禁使用 `<script type="module">`，也严禁在 js 里写 `import` / `export`。**
+   原因：`type="module"` 的脚本在**双击 index.html 直接打开时**（file:// 协议）
+   会被浏览器安全策略拦截，导致整页 JS 一行都不执行——
+   表现就是「按钮全部失灵、气泡框画不出来」。这个坑本项目已经踩过一次。
+   多个 js 文件之间用**全局函数**互相调用，靠 defer 保证执行顺序（先依赖、后入口）。
 2. **每个文件不超过 300 行**。超过就按功能拆成新文件。
 3. 新增功能时，**新建独立文件**，而不是往已有文件里继续堆。
 4. 颜色、字号、圆角、间距等**统一写成 CSS 变量**，放在 `css/theme.css` 的 `:root {}` 里；其他地方一律用 `var(--xxx)`，不要写死颜色值。
@@ -52,6 +64,11 @@ assets/
    本项目要求离线可用，所有资源必须放在本地或内联。
 6. **不要写"假的"功能**。做按钮就让它真的能点、真的有效果；
    如果暂时只能做视觉占位，必须明确告诉我"这个按钮目前只是样子，还不能用"。
+7. **不要使用 ES Module 语法**：不写 `import` / `export`，不写 `<script type="module">`。
+   拆分 js 文件时，用全局函数互相调用 + 普通 `<script src="..." defer>` 按顺序引入。
+8. **不要把 HTML 里写死的 `d` 路径当成气泡/图形的真实尺寸**。
+   依赖 JS 计算的图形（如气泡外框），HTML 里给一个空的合法值即可，
+   不要写 `L 100% 0` 这种非法路径（SVG 的 `d` 不支持百分比，会导致图形残缺）。
 
 ## 四、做完之后必须说明
 

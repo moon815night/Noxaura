@@ -51,8 +51,9 @@
       <div class="avatar">顾</div>
       <div class="bubble-wrapper">
         <div class="bubble">你在做什么？</div>
+        <!-- 气泡虚线外框：d 由 js/ui.js 按实际宽高动态绘制，这里留空即可 -->
         <svg class="bubble-svg">
-          <path d="M 0 12 Q 0 0 12 0 L 100% 0 Q 100% 0 100% 12 L 100% 100% L 6 100% L 0 100% Z" />
+          <path d="" />
         </svg>
       </div>
     </div>
@@ -121,7 +122,9 @@
   </div>
 </div>
 
-<!-- JS 模块引入 -->
-<script type="module" src="js/main.js"></script>
+<!-- JS 引入（普通脚本 + defer，保证双击 index.html 也能正常运行）
+     注意：不要改成 type="module"，file:// 协议下会被浏览器拦死 -->
+<script src="js/ui.js" defer></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>
