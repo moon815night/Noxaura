@@ -39,7 +39,7 @@
       });
     }
 
-    // 关闭/返回 絮语子页面
+    // 关闭絮语子页面（直接关闭）
     function closeDictSubpage() {
       dictOverlay.classList.remove('show');
     }
@@ -47,8 +47,16 @@
     if (btnCloseDict) {
       btnCloseDict.addEventListener('click', closeDictSubpage);
     }
+
+    // 返回按键逻辑：关闭絮语页面并重新打开设置页面
     if (btnBackDict) {
-      btnBackDict.addEventListener('click', closeDictSubpage);
+      btnBackDict.addEventListener('click', () => {
+        dictOverlay.classList.remove('show');
+        const settingsOverlay = document.getElementById('settings-overlay');
+        if (settingsOverlay) {
+          settingsOverlay.classList.add('show');
+        }
+      });
     }
 
     // 点击遮罩空白处关闭
