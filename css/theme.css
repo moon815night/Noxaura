@@ -31,11 +31,11 @@
   --color-settings-overlay: rgba(0, 0, 0, 0.2);
   --color-btn-active-bg: rgba(46, 31, 25, 0.07);
 
-  /* 按钮中心向两侧发散的线性渐变背景（透明度 50%） */
-  --btn-bg-green: linear-gradient(90deg, rgba(228, 248, 237, 0.2) 0%, rgba(145, 215, 172, 0.5) 50%, rgba(228, 248, 237, 0.2) 100%);
-  --btn-bg-green-active: linear-gradient(90deg, rgba(208, 242, 222, 0.3) 0%, rgba(120, 200, 150, 0.7) 50%, rgba(208, 242, 222, 0.3) 100%);
-  --btn-bg-brown: linear-gradient(90deg, rgba(248, 238, 234, 0.2) 0%, rgba(210, 172, 160, 0.5) 50%, rgba(248, 238, 234, 0.2) 100%);
-  --btn-bg-brown-active: linear-gradient(90deg, rgba(240, 222, 216, 0.3) 0%, rgba(190, 145, 132, 0.7) 50%, rgba(240, 222, 216, 0.3) 100%);
+  /* 按钮中心向上下发散的线性渐变背景（绿色与棕色调淡调暗，中间向上下发散） */
+  --btn-bg-green: linear-gradient(180deg, rgba(215, 235, 222, 0.18) 0%, rgba(135, 185, 155, 0.42) 50%, rgba(215, 235, 222, 0.18) 100%);
+  --btn-bg-green-active: linear-gradient(180deg, rgba(198, 228, 208, 0.25) 0%, rgba(115, 170, 138, 0.6) 50%, rgba(198, 228, 208, 0.25) 100%);
+  --btn-bg-brown: linear-gradient(180deg, rgba(235, 222, 218, 0.18) 0%, rgba(180, 150, 140, 0.42) 50%, rgba(235, 222, 218, 0.18) 100%);
+  --btn-bg-brown-active: linear-gradient(180deg, rgba(225, 208, 202, 0.25) 0%, rgba(160, 130, 120, 0.6) 50%, rgba(225, 208, 202, 0.25) 100%);
 
   /* 尺寸与布局参数 */
   --max-app-width: 760px;
