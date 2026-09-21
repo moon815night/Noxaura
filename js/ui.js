@@ -87,4 +87,9 @@ function appendMessage(chatContent, text, isMe = true) {
   chatContent.appendChild(row);
   updateBubbleSVG(wrapper);
   scrollToBottom(chatContent);
+
+  // 延迟一帧再次更新，确保在复杂布局或长文本折行稳定后，外框依然完美围住底色
+  setTimeout(() => {
+    updateBubbleSVG(wrapper);
+  }, 0);
 }
