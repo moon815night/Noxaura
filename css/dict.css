@@ -71,33 +71,6 @@
   color: var(--color-stroke-bubble);
 }
 
-/* 位于虚线下方的返回按键容器 */
-.dict-sub-nav {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.btn-dict-back {
-  width: 26px;
-  height: 26px;
-  border: 1.2px dashed var(--color-stroke-bubble);
-  border-radius: 8px;
-  background: var(--btn-bg-green);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: transform 0.1s, background-color 0.15s;
-}
-
-.btn-dict-back:active {
-  transform: scale(0.93);
-  background-color: var(--btn-bg-green-active);
-}
-
 .btn-dict-close {
   background: transparent;
   border: none;
@@ -117,9 +90,41 @@
   flex-shrink: 0;
 }
 
+/* 返回按键与全局搜索框并列行 */
+.dict-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-dict-back {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(119, 92, 85, 0.35);
+  border-radius: 10px;
+  background: var(--btn-bg-green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.04);
+  transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
+}
+
+.btn-dict-back:active {
+  transform: scale(0.93);
+  background-color: var(--btn-bg-green-active);
+}
+
 .dict-search-box {
   position: relative;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .dict-search-input {
@@ -158,11 +163,11 @@
   flex-wrap: wrap;
 }
 
-/* 圆润可爱按钮 - 带有棕色虚线边框 */
+/* 圆润可爱按钮 - 实线最细外边框 + 中心径向渐变透明50% + 立体毛玻璃质感 */
 .cute-btn {
   height: 30px;
   padding: 0 10px;
-  border: 1.2px dashed var(--color-stroke-bubble);
+  border: 1px solid rgba(119, 92, 85, 0.35);
   border-radius: 9px;
   background: var(--btn-bg-green);
   color: var(--color-stroke-main);
@@ -174,8 +179,10 @@
   gap: 4px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s, background-color 0.15s;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.04);
+  transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
 }
 
 .cute-btn:active {
@@ -186,7 +193,7 @@
 .cute-btn.danger {
   background: var(--btn-bg-brown);
   color: var(--color-stroke-main);
-  border: 1.2px dashed var(--color-stroke-bubble);
+  border: 1px solid rgba(119, 92, 85, 0.35);
 }
 
 .cute-btn.danger:active {
@@ -200,7 +207,7 @@
   border-radius: 8px;
 }
 
-/* 列表容器 (修复 Flex 滚动条) */
+/* 列表容器 (支持 Flex 弹性滚动) */
 .dict-body {
   flex: 1 1 0%;
   min-height: 0;

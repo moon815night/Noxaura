@@ -31,11 +31,11 @@
   --color-settings-overlay: rgba(0, 0, 0, 0.2);
   --color-btn-active-bg: rgba(46, 31, 25, 0.07);
 
-  /* 按钮纯色背景（透明度60%） */
-  --btn-bg-green: rgba(164, 222, 185, 0.6);
-  --btn-bg-green-active: rgba(140, 205, 165, 0.8);
-  --btn-bg-brown: rgba(216, 185, 175, 0.6);
-  --btn-bg-brown-active: rgba(195, 160, 150, 0.8);
+  /* 按钮中心径向渐变背景（透明度 50%） */
+  --btn-bg-green: radial-gradient(circle at center, rgba(175, 230, 195, 0.5) 0%, rgba(225, 248, 235, 0.5) 100%);
+  --btn-bg-green-active: radial-gradient(circle at center, rgba(150, 215, 175, 0.7) 0%, rgba(205, 240, 220, 0.7) 100%);
+  --btn-bg-brown: radial-gradient(circle at center, rgba(220, 192, 182, 0.5) 0%, rgba(248, 238, 234, 0.5) 100%);
+  --btn-bg-brown-active: radial-gradient(circle at center, rgba(205, 170, 160, 0.7) 0%, rgba(240, 222, 216, 0.7) 100%);
 
   /* 尺寸与布局参数 */
   --max-app-width: 760px;

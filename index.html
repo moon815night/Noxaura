@@ -112,12 +112,12 @@
       </button>
 
       <div class="settings-grid">
-        <!-- 打开的书本 - 絮语 -->
+        <!-- 翻开的书页 - 絮语 (修正标准的翻开书本造型) -->
         <div class="setting-item" id="btn-open-dict">
           <button class="placeholder-btn" aria-label="絮语">
-            <svg width="26" height="26" viewBox="0 0 24 24">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z M12 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z" stroke="#ffffff" stroke-width="4.5"/>
+              <path d="M2 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z M12 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z" stroke="var(--color-stroke-bubble)" stroke-width="1.6"/>
             </svg>
           </button>
           <span>絮语</span>
@@ -153,10 +153,9 @@
       <div class="dict-header">
         <div class="dict-header-left">
           <div class="dict-title-row">
-            <!-- 统一采用设置页同款双层描边书本图标 -->
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 统一标准的翻开书页图标 -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z M12 6s1.5-2 5-2 5 2 5 2v14s-1.5-2-5-2-5 2-5 2V6z"/>
             </svg>
             <span>絮语</span>
           </div>
@@ -169,23 +168,22 @@
         </button>
       </div>
 
-      <!-- 工具栏：虚线下方的返回键 + 全局搜索 + 操作按键 -->
+      <!-- 工具栏：返回键 + 全局搜索框并列行 + 操作按键 -->
       <div class="dict-toolbar">
-        <div class="dict-sub-nav">
-          <!-- 位于虚线下方的返回按键 ＜ (同色系棕色虚线框 + 纯色 60% 透明背景) -->
+        <div class="dict-search-row">
+          <!-- 位于全局搜索栏左侧与搜索栏并列的返回键 ＜ -->
           <button class="btn-dict-back" id="btn-back-dict" aria-label="返回上一页">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
-        </div>
-
-        <div class="dict-search-box">
-          <svg class="dict-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#775c55" stroke-width="2" stroke-linecap="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="text" class="dict-search-input" id="dict-search-input" placeholder="搜索全部字卡...">
+          <div class="dict-search-box">
+            <svg class="dict-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#775c55" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" class="dict-search-input" id="dict-search-input" placeholder="搜索全部字卡...">
+          </div>
         </div>
 
         <div class="dict-actions-bar">
