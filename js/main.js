@@ -19,6 +19,7 @@
     const chatInput = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send');
     const btnSettings = document.getElementById('btn-settings');
+    const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
 
     // 窗口变动时重新绘制气泡
@@ -64,6 +65,13 @@
     btnSettings.addEventListener('click', () => {
       settingsOverlay.classList.add('show');
     });
+
+    // 点击右上角叉号关闭设置面板
+    if (btnCloseSettings) {
+      btnCloseSettings.addEventListener('click', () => {
+        settingsOverlay.classList.remove('show');
+      });
+    }
 
     settingsOverlay.addEventListener('click', (e) => {
       if (e.target === settingsOverlay) {
