@@ -3,10 +3,7 @@
  *
  * 【重要 · 不要改】本项目不使用 ES Module。
  *   不要写 import / export，也不要用 <script type="module">。
- *   原因：type="module" 的脚本在"双击 index.html 直接打开"时（file:// 协议）
- *        会被浏览器安全策略拦截，导致整页 JS 一行都不执行 —— 表现就是
- *        按钮全部失灵、气泡框画不出来。
- *   正确做法：在 index.html 里按 ui.js → main.js 的顺序，
+ *   正确做法：在 index.html 里按 ui.js → state.js → dict.js → main.js 的顺序，
  *            用普通 <script src="..." defer></script> 引入。
  *
  * 依赖：js/ui.js 提供的全局函数 refreshAllBubbles / appendMessage
@@ -25,8 +22,7 @@
     // 窗口变动时重新绘制气泡
     window.addEventListener('resize', refreshAllBubbles);
 
-    // 页面资源全部加载完成后再重绘一次：
-    // 字体加载完之前气泡宽高是测不准的，会导致气泡框画歪/画不全
+    // 页面资源全部加载完成后再重绘一次
     window.addEventListener('load', refreshAllBubbles);
     setTimeout(refreshAllBubbles, 50);
 
@@ -48,10 +44,27 @@
       chatInput.value = '';
       btnSend.classList.remove('active');
 
-      // 对方在短暂延迟后自动回复一条占位消息
+      // 默认回复规则：用户发送消息后间隔 3-10 秒，一次发送 1-3 条字卡（每个字卡分开发送）
+      const delayMs = Math.floor(Math.random() * 7000) + 3000;
+      const count = Math.floor(Math.random() * 3) + 1;
+
       setTimeout(() => {
-        appendMessage(chatContent, '嗯，我在听。', false);
-      }, 1000);
+        let replies = [];
+        if (window.DictState && typeof window.DictState.getRandomCards === 'function') {
+          replies = window.DictState.getRandomCards(count);
+        }
+
+        if (replies.length === 0) {
+          replies = ['嗯，我在听。'];
+        }
+
+        // 依次发送每个字卡
+        replies.forEach((replyText, index) => {
+          setTimeout(() => {
+            appendMessage(chatContent, replyText, false);
+          }, index * 900);
+        });
+      }, delayMs);
     }
 
     btnSend.addEventListener('click', handleSend);

@@ -336,9 +336,24 @@
 .settings-grid {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   margin-top: 10px;
   width: 100%;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.setting-item span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-stroke-bubble);
+  user-select: none;
 }
 
 .placeholder-btn {

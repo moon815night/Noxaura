@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dict.css">
 </head>
 <body>
 
@@ -111,29 +112,101 @@
       </button>
 
       <div class="settings-grid">
-        <!-- 占位按钮 1 -->
-        <button class="placeholder-btn" aria-label="选项1">
-          <svg width="26" height="26" viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <!-- 打开的书本 - 絮语 -->
+        <div class="setting-item" id="btn-open-dict">
+          <button class="placeholder-btn" aria-label="絮语">
+            <svg width="26" height="26" viewBox="0 0 24 24">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span>絮语</span>
+        </div>
         <!-- 占位按钮 2 -->
-        <button class="placeholder-btn" aria-label="选项2">
-          <svg width="26" height="26" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <div class="setting-item">
+          <button class="placeholder-btn" aria-label="选项2">
+            <svg width="26" height="26" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
         <!-- 占位按钮 3 -->
-        <button class="placeholder-btn" aria-label="选项3">
-          <svg width="26" height="26" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="5"/>
-            <path d="M12 8v4l3 3" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="12" cy="12" r="9" fill="none" stroke="#2e1f19" stroke-width="1.8"/>
-            <path d="M12 8v4l3 3" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round"/>
+        <div class="setting-item">
+          <button class="placeholder-btn" aria-label="选项3">
+            <svg width="26" height="26" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="5"/>
+              <path d="M12 8v4l3 3" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="9" fill="none" stroke="#2e1f19" stroke-width="1.8"/>
+              <path d="M12 8v4l3 3" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、絮语（词库管理）全屏/半全屏面板 -->
+  <div class="dict-overlay" id="dict-overlay">
+    <div class="dict-panel">
+      <!-- 头部：图标 + 标题 + 关闭按钮 -->
+      <div class="dict-header">
+        <div class="dict-header-left">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>絮语</span>
+        </div>
+        <button class="btn-dict-close" id="btn-close-dict" aria-label="关闭絮语">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
+      </div>
+
+      <!-- 工具栏：全局搜索 + 操作按键 -->
+      <div class="dict-toolbar">
+        <div class="dict-search-box">
+          <svg class="dict-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#775c55" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="dict-search-input" id="dict-search-input" placeholder="搜索全部字卡（并显示所属分组）...">
+        </div>
+
+        <div class="dict-actions-bar">
+          <div class="dict-actions-left">
+            <button class="cute-btn" id="btn-add-group">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              新建分组
+            </button>
+          </div>
+          <div class="dict-actions-right">
+            <button class="cute-btn" id="btn-export-cards" title="导出字卡文本">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              导出字卡
+            </button>
+            <button class="cute-btn danger" id="btn-delete-all-groups" title="清空全部分组">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              清空
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主体列表 -->
+      <div class="dict-body" id="dict-list-container">
+        <!-- JS 动态渲染分组与字卡卡片 -->
       </div>
     </div>
   </div>
@@ -141,6 +214,8 @@
 
 <!-- JS 引入 -->
 <script src="js/ui.js" defer></script>
+<script src="js/state.js" defer></script>
+<script src="js/dict.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>

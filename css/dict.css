@@ -1,0 +1,374 @@
+/* ==================== 絮语 (词库管理) 子页面 ==================== */
+.dict-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.dict-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dict-panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 88%;
+  max-height: 720px;
+  background: rgba(244, 251, 246, 0.96);
+  border: 1.5px solid var(--color-stroke-bubble);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 16px 16px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(46, 31, 25, 0.15);
+  transform: scale(0.95);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+}
+
+.dict-overlay.show .dict-panel {
+  transform: scale(1);
+}
+
+.dict-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(119, 92, 85, 0.25);
+  flex-shrink: 0;
+}
+
+.dict-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-stroke-bubble);
+}
+
+.dict-header-left svg {
+  display: block;
+}
+
+.btn-dict-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 搜索框与顶部工具栏 */
+.dict-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+
+.dict-search-box {
+  position: relative;
+  width: 100%;
+}
+
+.dict-search-input {
+  width: 100%;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1.2px solid var(--color-input-border);
+  border-radius: 12px;
+  padding: 0 12px 0 34px;
+  font-size: 13.5px;
+  color: var(--color-text-main);
+  outline: none;
+}
+
+.dict-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.dict-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dict-actions-left,
+.dict-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 圆润可爱无边框图标按钮 */
+.cute-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--color-dict-btn-bg);
+  color: var(--color-stroke-main);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, background-color 0.15s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.cute-btn:active {
+  transform: scale(0.95);
+  background-color: var(--color-accent-green);
+}
+
+.cute-btn.danger {
+  background-color: #ffd8d8;
+  color: #702020;
+}
+
+.cute-btn.danger:active {
+  background-color: #f7b5b5;
+}
+
+.cute-btn-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 8px;
+}
+
+/* 列表容器 (可滚) */
+.dict-body {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 12px;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 分组卡片 */
+.group-card {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.2px solid rgba(119, 92, 85, 0.3);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(230, 244, 235, 0.5);
+  user-select: none;
+}
+
+.group-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.group-toggle-icon {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.group-card.collapsed .group-toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.group-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5d4842;
+  background: rgba(119, 92, 85, 0.12);
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.group-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+/* 分组内容区域 */
+.group-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.group-card.collapsed .group-body {
+  display: none;
+}
+
+.group-search-input {
+  width: 100%;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-input-border);
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--color-text-main);
+  outline: none;
+  margin-bottom: 4px;
+}
+
+.card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid rgba(119, 92, 85, 0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  gap: 8px;
+}
+
+.card-text {
+  font-size: 13px;
+  color: var(--color-text-main);
+  word-break: break-all;
+  flex: 1;
+}
+
+.card-tag {
+  font-size: 10px;
+  color: #775c55;
+  background: #eef7f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dict-empty-tip {
+  text-align: center;
+  color: #9dadab;
+  font-size: 13px;
+  padding: 30px 0;
+}
+
+/* 通用简易 Modal */
+.dict-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.dict-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dict-modal-content {
+  width: 100%;
+  max-width: 380px;
+  background: #fbfefc;
+  border-radius: 16px;
+  padding: 18px;
+  border: 1.5px solid var(--color-stroke-bubble);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dict-modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.dict-modal-input,
+.dict-modal-textarea {
+  width: 100%;
+  background: rgba(239, 248, 241, 0.6);
+  border: 1.2px solid var(--color-input-border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  outline: none;
+  font-family: inherit;
+}
+
+.dict-modal-textarea {
+  height: 110px;
+  resize: vertical;
+}
+
+.dict-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
