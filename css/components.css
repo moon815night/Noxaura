@@ -1,0 +1,334 @@
+/* ==================== 顶部栏 ==================== */
+.top-bar {
+  background-color: var(--color-bar-bg);
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: 12px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
+  user-select: none;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-back {
+  border: none;
+  background: none;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-text-main);
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-name {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  letter-spacing: 0.8px;
+  line-height: 1.2;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: var(--color-text-main);
+  margin-top: 2px;
+}
+
+.phone-icon {
+  width: 10px;
+  height: 12px;
+  border: 1.2px solid var(--color-stroke-main);
+  border-radius: 2px;
+}
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* ==================== 聊天区与消息气泡 ==================== */
+.chat-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+}
+
+.msg-row.me {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.msg-row.opponent .avatar {
+  background-color: var(--color-avatar-opponent-bg);
+  color: var(--color-avatar-opponent-text);
+}
+
+.msg-row.me .avatar {
+  background-color: var(--color-avatar-me-bg);
+  color: var(--color-text-main);
+}
+
+.bubble-wrapper {
+  position: relative;
+  max-width: 68%;
+  min-width: 74px;
+}
+
+.bubble {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--color-text-main);
+  word-break: break-word;
+  z-index: 1;
+}
+
+.msg-row.opponent .bubble {
+  background-color: var(--color-bubble-opponent);
+  border-bottom-left-radius: 2px;
+}
+
+.msg-row.me .bubble {
+  background-color: var(--color-bubble-me);
+  border-bottom-right-radius: 2px;
+}
+
+.bubble-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bubble-svg path {
+  fill: none;
+  stroke: var(--color-stroke-bubble);
+  stroke-width: 1.7px;
+  stroke-dasharray: 10 3 2 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ==================== 底部栏 ==================== */
+.bottom-bar {
+  background-color: var(--color-bar-bg);
+  padding-top: 17px;
+  padding-bottom: max(17px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-bubbles {
+  width: 38px;
+  height: 38px;
+  border: 1.6px solid var(--color-stroke-main);
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.btn-bubbles:active {
+  background-color: var(--color-btn-active-bg);
+}
+
+.chat-input {
+  flex: 1;
+  height: 42px;
+  background-color: var(--color-input-bg);
+  border: 1.6px solid var(--color-input-border);
+  border-radius: 14px;
+  padding: 0 14px;
+  font-size: 14.5px;
+  color: var(--color-text-main);
+  outline: none;
+}
+
+.chat-input::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+.btn-kaomoji {
+  height: 42px;
+  padding: 0 10px;
+  border: 1.6px solid var(--color-stroke-main);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text-main);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.btn-kaomoji:active {
+  background-color: var(--color-btn-active-bg);
+}
+
+.btn-send {
+  width: 42px;
+  height: 42px;
+  border: 1.6px solid var(--color-stroke-main);
+  border-radius: 12px;
+  background-color: var(--color-send-disabled-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.btn-send svg {
+  opacity: 0.42;
+  transition: opacity 0.2s;
+}
+
+.btn-send.active {
+  background-color: var(--color-primary-green);
+  cursor: pointer;
+}
+
+.btn-send.active svg {
+  opacity: 1;
+}
+
+.btn-send:active {
+  background-color: var(--color-btn-active-bg);
+}
+
+/* ==================== 设置面板 ==================== */
+.settings-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-settings-overlay);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-top: max(60px, calc(env(safe-area-inset-top) + 40px));
+  padding-right: max(20px, env(safe-area-inset-right));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.settings-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-panel {
+  width: 260px;
+  background: var(--color-settings-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 32px var(--color-settings-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transform: translateY(-10px) scale(0.95);
+  transition: transform 0.25s ease;
+}
+
+.settings-overlay.show .settings-panel {
+  transform: translateY(0) scale(1);
+}
+
+.settings-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.placeholder-btn {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  border: 1.6px solid var(--color-stroke-main);
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6), 0 4px 8px rgba(46, 31, 25, 0.08);
+  transition: transform 0.1s, background 0.1s;
+}
+
+.placeholder-btn:active {
+  transform: translateY(2px);
+  background: rgba(255, 255, 255, 0.5);
+}
