@@ -117,7 +117,7 @@
           <button class="placeholder-btn" aria-label="絮语">
             <svg width="26" height="26" viewBox="0 0 24 24">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <span>絮语</span>
@@ -149,23 +149,17 @@
   <!-- 六、絮语（词库管理）全屏/半全屏面板 -->
   <div class="dict-overlay" id="dict-overlay">
     <div class="dict-panel">
-      <!-- 头部：图标 + 标题 + 关闭按钮 + 返回键 -->
+      <!-- 头部：图标 + 标题 + 右上角关闭按钮 -->
       <div class="dict-header">
         <div class="dict-header-left">
           <div class="dict-title-row">
             <!-- 统一采用设置页同款双层描边书本图标 -->
             <svg width="24" height="24" viewBox="0 0 24 24">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 1 4 4v14a3 3 0 0 1 3-3h7z" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>絮语</span>
           </div>
-          <!-- 图标之下，虚线之上的返回键 ＜ (填充背景，无边框，大小与打叉键相当) -->
-          <button class="btn-dict-back" id="btn-back-dict" aria-label="返回上一页">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
         </div>
         <button class="btn-dict-close" id="btn-close-dict" aria-label="关闭絮语">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.2" stroke-linecap="round">
@@ -175,8 +169,17 @@
         </button>
       </div>
 
-      <!-- 工具栏：全局搜索 + 操作按键 -->
+      <!-- 工具栏：虚线下方的返回键 + 全局搜索 + 操作按键 -->
       <div class="dict-toolbar">
+        <div class="dict-sub-nav">
+          <!-- 位于虚线下方的返回按键 ＜ (同色系棕色虚线框 + 纯色 60% 透明背景) -->
+          <button class="btn-dict-back" id="btn-back-dict" aria-label="返回上一页">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
         <div class="dict-search-box">
           <svg class="dict-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#775c55" stroke-width="2" stroke-linecap="round">
             <circle cx="11" cy="11" r="8"/>
@@ -221,7 +224,7 @@
         </div>
       </div>
 
-      <!-- 主体列表 -->
+      <!-- 主体列表 (支持 Flex 弹性滚动) -->
       <div class="dict-body" id="dict-list-container">
         <!-- JS 动态渲染分组与字卡卡片 -->
       </div>

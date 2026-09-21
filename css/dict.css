@@ -14,6 +14,7 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
+  box-sizing: border-box;
 }
 
 .dict-overlay.show {
@@ -25,7 +26,7 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  height: 88%;
+  height: 85vh;
   max-height: 720px;
   background: rgba(244, 251, 246, 0.96);
   border: 1.5px solid var(--color-stroke-bubble);
@@ -39,6 +40,7 @@
   transform: scale(0.95);
   transition: transform 0.25s ease;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .dict-overlay.show .dict-panel {
@@ -47,18 +49,17 @@
 
 .dict-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   padding-bottom: 8px;
-  border-bottom: 1px dashed rgba(119, 92, 85, 0.25);
+  border-bottom: 1px dashed rgba(119, 92, 85, 0.35);
   flex-shrink: 0;
 }
 
 .dict-header-left {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
 .dict-title-row {
@@ -70,24 +71,31 @@
   color: var(--color-stroke-bubble);
 }
 
+/* 位于虚线下方的返回按键容器 */
+.dict-sub-nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .btn-dict-back {
   width: 26px;
   height: 26px;
-  border: none;
+  border: 1.2px dashed var(--color-stroke-bubble);
   border-radius: 8px;
-  background: var(--btn-grad-green);
+  background: var(--btn-bg-green);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: transform 0.1s, background 0.15s;
+  transition: transform 0.1s, background-color 0.15s;
 }
 
 .btn-dict-back:active {
   transform: scale(0.93);
-  background: var(--btn-grad-green-active);
+  background-color: var(--btn-bg-green-active);
 }
 
 .btn-dict-close {
@@ -104,7 +112,7 @@
 .dict-toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   margin-top: 10px;
   flex-shrink: 0;
 }
@@ -150,13 +158,13 @@
   flex-wrap: wrap;
 }
 
-/* 圆润可爱按钮 - 浅绿渐变与浅棕渐变 */
+/* 圆润可爱按钮 - 带有棕色虚线边框 */
 .cute-btn {
   height: 30px;
   padding: 0 10px;
-  border: none;
+  border: 1.2px dashed var(--color-stroke-bubble);
   border-radius: 9px;
-  background: var(--btn-grad-green);
+  background: var(--btn-bg-green);
   color: var(--color-stroke-main);
   font-size: 12px;
   font-weight: 600;
@@ -166,22 +174,23 @@
   gap: 4px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.1s, opacity 0.15s;
+  transition: transform 0.1s, background-color 0.15s;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .cute-btn:active {
   transform: scale(0.95);
-  background: var(--btn-grad-green-active);
+  background: var(--btn-bg-green-active);
 }
 
 .cute-btn.danger {
-  background: var(--btn-grad-brown);
+  background: var(--btn-bg-brown);
   color: var(--color-stroke-main);
+  border: 1.2px dashed var(--color-stroke-bubble);
 }
 
 .cute-btn.danger:active {
-  background: var(--btn-grad-brown-active);
+  background: var(--btn-bg-brown-active);
 }
 
 .cute-btn-icon {
@@ -191,11 +200,11 @@
   border-radius: 8px;
 }
 
-/* 列表容器 (完美滚动条) */
+/* 列表容器 (修复 Flex 滚动条) */
 .dict-body {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
   margin-top: 10px;
   padding-right: 4px;
@@ -209,7 +218,7 @@
 }
 
 .dict-body::-webkit-scrollbar-thumb {
-  background: rgba(119, 92, 85, 0.25);
+  background: rgba(119, 92, 85, 0.3);
   border-radius: 4px;
 }
 
@@ -257,6 +266,7 @@
   border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.2s;
+  flex-shrink: 0;
 }
 
 .group-header {
