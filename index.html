@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>私人聊天</title>
+  <style>
+    /* ==================== 0. 全局与适配重置 ==================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #2e1f19;
+    }
+
+    /* 容器：桌面端最大760px居中，手机端全屏 */
+    .chat-app {
+      width: 100%;
+      max-width: 760px;
+      height: 100%;
+      height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      /* 一、整体背景：圆心径向渐变 */
+      background: radial-gradient(circle at center, #dcfae2 0%, #e0f8e8 26%, #ebfbf2 54%, #f5fdf9 80%, #fbfefc 100%);
+      overflow: hidden;
+    }
+
+    /* ==================== 二、顶部栏 ==================== */
+    .top-bar {
+      background-color: #eaffd5;
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: 12px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-back {
+      border: none;
+      background: none;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2e1f19;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-name {
+      font-size: 19px;
+      font-weight: 600;
+      color: #2e1f19;
+      letter-spacing: 0.8px;
+      line-height: 1.2;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9.5px;
+      color: #2e1f19;
+      margin-top: 2px;
+    }
+
+    .phone-icon {
+      width: 10px;
+      height: 12px;
+      border: 1.2px solid #2e1f19;
+      border-radius: 2px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+    }
+
+    /* ==================== 三、聊天区与消息气泡 ==================== */
+    .chat-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .msg-row.me {
+      flex-direction: row-reverse;
+    }
+
+    /* 头像框 */
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .msg-row.opponent .avatar {
+      background-color: #000000;
+      color: #eaffd5;
+    }
+
+    .msg-row.me .avatar {
+      background-color: #ffdce5;
+      color: #2e1f19;
+    }
+
+    /* 气泡容器 */
+    .bubble-wrapper {
+      position: relative;
+      max-width: 68%;
+      min-width: 74px;
+    }
+
+    .bubble {
+      position: relative;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14.5px;
+      line-height: 1.55;
+      color: #2e1f19;
+      word-break: break-word;
+      z-index: 1;
+    }
+
+    .msg-row.opponent .bubble {
+      background-color: #f2fbfc;
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg-row.me .bubble {
+      background-color: #d5eae3;
+      border-bottom-right-radius: 2px;
+    }
+
+    /* SVG 矢量手绘虚线边框与极短尾巴 */
+    .bubble-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .bubble-svg path {
+      fill: none;
+      stroke: #775c55;
+      stroke-width: 1.7px;
+      stroke-dasharray: 10 3 2 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ==================== 四、底部栏 ==================== */
+    .bottom-bar {
+      background-color: #eaffd5;
+      padding-top: 17px;
+      padding-bottom: max(17px, env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* 1. 泡泡键 */
+    .btn-bubbles {
+      width: 38px;
+      height: 38px;
+      border: 1.6px solid #2e1f19;
+      border-radius: 8px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .btn-bubbles:active {
+      background-color: rgba(46, 31, 25, 0.07);
+    }
+
+    /* 2. 聊天输入框 */
+    .chat-input {
+      flex: 1;
+      height: 42px;
+      background-color: #e6f5fa;
+      border: 1.6px solid #d5cfc0;
+      border-radius: 14px;
+      padding: 0 14px;
+      font-size: 14.5px;
+      color: #2e1f19;
+      outline: none;
+    }
+
+    .chat-input::placeholder {
+      color: #9dadab;
+    }
+
+    /* 3. 颜文字键 */
+    .btn-kaomoji {
+      height: 42px;
+      padding: 0 10px;
+      border: 1.6px solid #2e1f19;
+      border-radius: 12px;
+      background: transparent;
+      color: #2e1f19;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .btn-kaomoji:active {
+      background-color: rgba(46, 31, 25, 0.07);
+    }
+
+    /* 4. 发送键 */
+    .btn-send {
+      width: 42px;
+      height: 42px;
+      border: 1.6px solid #2e1f19;
+      border-radius: 12px;
+      background-color: #e2eee5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
+    }
+
+    .btn-send svg {
+      opacity: 0.42;
+      transition: opacity 0.2s;
+    }
+
+    .btn-send.active {
+      background-color: #dcfae2;
+      cursor: pointer;
+    }
+
+    .btn-send.active svg {
+      opacity: 1;
+    }
+
+    .btn-send:active {
+      background-color: rgba(46, 31, 25, 0.07);
+    }
+
+    /* ==================== 五、设置面板 ==================== */
+    .settings-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-top: max(60px, calc(env(safe-area-inset-top) + 40px));
+      padding-right: max(20px, env(safe-area-inset-right));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .settings-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .settings-panel {
+      width: 260px;
+      background: rgba(234, 255, 213, 0.70);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(46, 31, 25, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transform: translateY(-10px) scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .settings-overlay.show .settings-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .settings-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .placeholder-btn {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: 16px;
+      border: 1.6px solid #2e1f19;
+      background: rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      /* 透明立体感：内阴影 + 外阴影 */
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6), 0 4px 8px rgba(46, 31, 25, 0.08);
+      transition: transform 0.1s, background 0.1s;
+    }
+
+    .placeholder-btn:active {
+      transform: translateY(2px);
+      background: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-app">
+  <!-- 二、顶部栏 -->
+  <header class="top-bar">
+    <div class="top-left">
+      <button class="btn-back" aria-label="返回">＜</button>
+      <div class="contact-info">
+        <div class="contact-name">顾时夜</div>
+        <div class="status-bar">
+          <div class="phone-icon"></div>
+          <span>在线</span>
+        </div>
+      </div>
+    </div>
+    <div class="top-right">
+      <!-- 月亮图标 -->
+      <button class="icon-btn" aria-label="月亮">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#eaffd5"/>
+        </svg>
+      </button>
+      <!-- 设置键 -->
+      <button class="icon-btn" id="btn-settings" aria-label="设置">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 三、聊天区 -->
+  <main class="chat-content" id="chat-content">
+    <!-- 对方消息示例 -->
+    <div class="msg-row opponent">
+      <div class="avatar">顾</div>
+      <div class="bubble-wrapper">
+        <div class="bubble">你在做什么？</div>
+        <svg class="bubble-svg">
+          <path d="M 0 12 Q 0 0 12 0 L 100% 0 Q 100% 0 100% 12 L 100% 100% L 6 100% L 0 100% Z" />
+        </svg>
+      </div>
+    </div>
+  </main>
+
+  <!-- 四、底部栏 -->
+  <footer class="bottom-bar">
+    <!-- 1. 泡泡键 -->
+    <button class="btn-bubbles" aria-label="泡泡键">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.7" stroke-linecap="round">
+        <!-- 左侧大泡泡 -->
+        <circle cx="8" cy="13" r="5" fill="#eaffd5"/>
+        <!-- 右上最小泡泡 -->
+        <circle cx="17" cy="7" r="2.5" fill="#eaffd5"/>
+        <!-- 右下稍大泡泡 -->
+        <circle cx="16" cy="16" r="3.5" fill="#eaffd5"/>
+      </svg>
+    </button>
+
+    <!-- 2. 输入框 -->
+    <input type="text" class="chat-input" id="chat-input" placeholder="输入消息..." />
+
+    <!-- 3. 颜文字键 -->
+    <button class="btn-kaomoji" aria-label="颜文字">ᗜ֊ᗜ</button>
+
+    <!-- 4. 发送键 -->
+    <button class="btn-send" id="btn-send" aria-label="发送">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </footer>
+
+  <!-- 五、设置面板遮罩 -->
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel">
+      <div class="settings-grid">
+        <!-- 占位按钮 1 -->
+        <button class="placeholder-btn" aria-label="选项1">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <!-- 白色粗描边 -->
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 深棕黑色细线条 -->
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <!-- 占位按钮 2 -->
+        <button class="placeholder-btn" aria-label="选项2">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <!-- 占位按钮 3 -->
+        <button class="placeholder-btn" aria-label="选项3">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="6"/>
+            <path d="M12 8v4l3 3" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="9" fill="none" stroke="#2e1f19" stroke-width="1.8"/>
+            <path d="M12 8v4l3 3" fill="none" stroke="#2e1f19" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const chatContent = document.getElementById('chat-content');
+  const chatInput = document.getElementById('chat-input');
+  const btnSend = document.getElementById('btn-send');
+  const btnSettings = document.getElementById('btn-settings');
+  const settingsOverlay = document.getElementById('settings-overlay');
+
+  // 动态调节 SVG 虚线框尺寸与描边路径
+  function updateBubbleSVG(wrapper) {
+    const bubble = wrapper.querySelector('.bubble');
+    const svg = wrapper.querySelector('.bubble-svg');
+    const path = svg.querySelector('path');
+    
+    const w = bubble.offsetWidth;
+    const h = bubble.offsetHeight;
+    const isMe = wrapper.parentElement.classList.contains('me');
+
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    
+    // 气泡圆角 12px，短尾巴 4px
+    const r = 12;
+    const tail = 4;
+
+    let d = '';
+    if (isMe) {
+      // 我方气泡（右下角短尾巴）
+      d = `M ${r} 0 
+           L ${w - r} 0 
+           A ${r} ${r} 0 0 1 ${w} ${r} 
+           L ${w} ${h - r} 
+           A ${r} ${r} 0 0 1 ${w - r} ${h} 
+           L ${w - r + tail} ${h + tail} 
+           L ${w - r - 4} ${h} 
+           L ${r} ${h} 
+           A ${r} ${r} 0 0 1 0 ${h - r} 
+           L 0 ${r} 
+           A ${r} ${r} 0 0 1 ${r} 0 Z`;
+    } else {
+      // 对方气泡（左下角短尾巴）
+      d = `M ${r} 0 
+           L ${w - r} 0 
+           A ${r} ${r} 0 0 1 ${w} ${r} 
+           L ${w} ${h - r} 
+           A ${r} ${r} 0 0 1 ${w - r} ${h} 
+           L ${r + 4} ${h} 
+           L ${r - tail} ${h + tail} 
+           L ${r} ${h - tail} 
+           A ${r} ${r} 0 0 1 0 ${h - r} 
+           L 0 ${r} 
+           A ${r} ${r} 0 0 1 ${r} 0 Z`;
+    }
+    path.setAttribute('d', d);
+  }
+
+  // 监听所有气泡绘制
+  function refreshAllBubbles() {
+    document.querySelectorAll('.bubble-wrapper').forEach(updateBubbleSVG);
+  }
+  window.addEventListener('resize', refreshAllBubbles);
+  setTimeout(refreshAllBubbles, 50);
+
+  // 滚动到底部
+  function scrollToBottom() {
+    chatContent.scrollTop = chatContent.scrollHeight;
+  }
+
+  // 输入框文字变动监听 -> 激活/禁用发送按钮
+  chatInput.addEventListener('input', () => {
+    if (chatInput.value.trim().length > 0) {
+      btnSend.classList.add('active');
+    } else {
+      btnSend.classList.remove('active');
+    }
+  });
+
+  // 添加消息
+  function appendMessage(text, isMe = true) {
+    const row = document.createElement('div');
+    row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = isMe ? '我' : '顾';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'bubble-wrapper';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'bubble-svg');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    svg.appendChild(path);
+
+    wrapper.appendChild(bubble);
+    wrapper.appendChild(svg);
+    row.appendChild(avatar);
+    row.appendChild(wrapper);
+
+    chatContent.appendChild(row);
+    updateBubbleSVG(wrapper);
+    scrollToBottom();
+  }
+
+  // 发送逻辑
+  function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    appendMessage(text, true);
+    chatInput.value = '';
+    btnSend.classList.remove('active');
+
+    // 对方在短暂延迟后自动回复一条占位消息
+    setTimeout(() => {
+      appendMessage('嗯，我在听。', false);
+    }, 1000);
+  }
+
+  btnSend.addEventListener('click', handleSend);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  });
+
+  // 设置面板切换
+  btnSettings.addEventListener('click', () => {
+    settingsOverlay.classList.add('show');
+  });
+
+  settingsOverlay.addEventListener('click', (e) => {
+    if (e.target === settingsOverlay) {
+      settingsOverlay.classList.remove('show');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      settingsOverlay.classList.remove('show');
+    }
+  });
+</script>
+
+</body>
+</html>
