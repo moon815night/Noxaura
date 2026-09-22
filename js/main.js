@@ -15,9 +15,13 @@
     const chatContent = document.getElementById('chat-content');
     const chatInput = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send');
+    const btnBubbles = document.querySelector('.btn-bubbles');
     const btnSettings = document.getElementById('btn-settings');
     const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
+
+    // 连发模式标记
+    let isContinuousMode = false;
 
     // 窗口变动时重新绘制气泡
     window.addEventListener('resize', refreshAllBubbles);
@@ -26,25 +30,33 @@
     window.addEventListener('load', refreshAllBubbles);
     setTimeout(refreshAllBubbles, 50);
 
-    // 输入框文字变动监听 -> 激活/禁用发送按钮
-    chatInput.addEventListener('input', () => {
-      if (chatInput.value.trim().length > 0) {
+    // 更新发送按钮高亮状态
+    function updateSendBtnState() {
+      if (isContinuousMode || chatInput.value.trim().length > 0) {
         btnSend.classList.add('active');
       } else {
         btnSend.classList.remove('active');
       }
-    });
+    }
 
-    // 发送消息逻辑
-    function handleSend() {
-      const text = chatInput.value.trim();
-      if (!text) return;
+    // 泡泡键点击事件：开启 / 关闭连发模式
+    if (btnBubbles) {
+      btnBubbles.addEventListener('click', () => {
+        isContinuousMode = !isContinuousMode;
+        if (isContinuousMode) {
+          btnBubbles.classList.add('active');
+        } else {
+          btnBubbles.classList.remove('active');
+        }
+        updateSendBtnState();
+      });
+    }
 
-      appendMessage(chatContent, text, true);
-      chatInput.value = '';
-      btnSend.classList.remove('active');
+    // 输入框文字变动监听 -> 激活/禁用发送按钮
+    chatInput.addEventListener('input', updateSendBtnState);
 
-      // 默认回复规则：用户发送消息后间隔 3-10 秒，一次发送 1-3 条字卡（每个字卡分开发送）
+    // 触发对方回复逻辑
+    function triggerOpponentReply() {
       const delayMs = Math.floor(Math.random() * 7000) + 3000;
       const count = Math.floor(Math.random() * 3) + 1;
 
@@ -67,10 +79,47 @@
       }, delayMs);
     }
 
-    btnSend.addEventListener('click', handleSend);
+    // 处理发送消息逻辑
+    function handleSendText() {
+      const text = chatInput.value.trim();
+      if (!text) return false;
+
+      appendMessage(chatContent, text, true);
+      chatInput.value = '';
+      return true;
+    }
+
+    // 按下 Enter 键发送消息
     chatInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        handleSend();
+        const sent = handleSendText();
+        if (sent) {
+          if (!isContinuousMode) {
+            // 非连发模式下，按 Enter 发送消息并触发对方回复
+            updateSendBtnState();
+            triggerOpponentReply();
+          } else {
+            // 连发模式下，按 Enter 仅发送消息，对方不回复，发送键保持亮起
+            updateSendBtnState();
+          }
+        }
+      }
+    });
+
+    // 点击发送按键
+    btnSend.addEventListener('click', () => {
+      if (isContinuousMode) {
+        // 连发模式下：如果有未发送的文本先发送出来，然后触发对方回复
+        handleSendText();
+        updateSendBtnState();
+        triggerOpponentReply();
+      } else {
+        // 非连发模式下：有字才发送并触发对方回复
+        const sent = handleSendText();
+        if (sent) {
+          updateSendBtnState();
+          triggerOpponentReply();
+        }
       }
     });
 
