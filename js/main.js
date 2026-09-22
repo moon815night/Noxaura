@@ -6,7 +6,7 @@
  *   正确做法：在 index.html 里按 ui.js → state.js → dict.js → main.js 的顺序，
  *            用普通 <script src="..." defer></script> 引入。
  *
- * 依赖：js/ui.js 提供的全局函数 refreshAllBubbles / appendMessage / scrollToBottom
+ * 依赖：js/ui.js 提供的全局函数 refreshAllBubbles / appendMessage / appendImageMessage / scrollToBottom
  */
 (function () {
   'use strict';
@@ -23,6 +23,9 @@
     const btnSettings = document.getElementById('btn-settings');
     const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
+
+    const btnAlbum = document.getElementById('btn-album');
+    const albumFileInput = document.getElementById('album-file-input');
 
     // 连发模式标记
     let isContinuousMode = false;
@@ -177,6 +180,38 @@
         }
       }
     });
+
+    // ==================== 相册选择与发送照片逻辑 ====================
+    if (btnAlbum && albumFileInput) {
+      btnAlbum.addEventListener('click', () => {
+        albumFileInput.click();
+      });
+
+      albumFileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+
+        let processedCount = 0;
+
+        files.forEach((file) => {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const imgSrc = evt.target.result;
+            appendImageMessage(chatContent, imgSrc, true);
+            processedCount++;
+
+            // 所有选中的照片发送完毕后触发对方回复
+            if (processedCount === files.length) {
+              triggerOpponentReply();
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // 重置 input 以便于再次选择相同图片
+        albumFileInput.value = '';
+      });
+    }
 
     // 设置面板切换
     btnSettings.addEventListener('click', () => {

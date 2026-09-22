@@ -27,7 +27,7 @@
       <div class="contact-info">
         <div class="contact-name">顾时夜</div>
         <div class="status-bar">
-          <!-- 横着的游戏机 SVG 图标 -->
+          <!-- 横着的游戏机 SVG 图框 -->
           <svg class="console-icon-svg" width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="#2e1f19" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
             <!-- 游戏机外框 -->
             <rect x="0.8" y="0.8" width="14.4" height="8.4" rx="2" />
@@ -123,7 +123,7 @@
           </div>
           <span>表情</span>
         </div>
-        <div class="feature-item">
+        <div class="feature-item" id="btn-album">
           <div class="feature-btn">
             <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#ffffff" stroke-width="3.80">
@@ -321,6 +321,9 @@
     </div>
   </div>
 </div>
+
+<!-- 隐藏的本地图片多选 input 框 -->
+<input type="file" id="album-file-input" accept="image/*" multiple style="display: none;">
 
 <!-- JS 引入 -->
 <script src="js/ui.js" defer></script>

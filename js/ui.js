@@ -2,9 +2,14 @@
  * 动态计算并更新消息气泡 SVG 虚线外框路径
  */
 function updateBubbleSVG(wrapper) {
+  // 如果是图片消息，不需要计算与绘制 SVG 虚线外框
+  if (wrapper.classList.contains('image-wrapper')) return;
+
   const bubble = wrapper.querySelector('.bubble');
   const svg = wrapper.querySelector('.bubble-svg');
+  if (!bubble || !svg) return;
   const path = svg.querySelector('path');
+  if (!path) return;
 
   const w = bubble.offsetWidth;
   const h = bubble.offsetHeight;
@@ -58,7 +63,7 @@ function scrollToBottom(chatContent) {
 }
 
 /**
- * 生成并添加一条新消息到界面
+ * 生成并添加一条文本消息到界面
  */
 function appendMessage(chatContent, text, isMe = true) {
   const row = document.createElement('div');
@@ -92,4 +97,36 @@ function appendMessage(chatContent, text, isMe = true) {
   setTimeout(() => {
     updateBubbleSVG(wrapper);
   }, 0);
+}
+
+/**
+ * 生成并添加一条图片消息到界面（无气泡底色、无虚线框）
+ */
+function appendImageMessage(chatContent, imgSrc, isMe = true) {
+  const row = document.createElement('div');
+  row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bubble-wrapper image-wrapper';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble bubble-image';
+
+  const img = document.createElement('img');
+  img.className = 'bubble-image-img';
+  img.src = imgSrc;
+  img.onload = () => {
+    scrollToBottom(chatContent);
+  };
+
+  bubble.appendChild(img);
+  wrapper.appendChild(bubble);
+  row.appendChild(avatar);
+  row.appendChild(wrapper);
+
+  chatContent.appendChild(row);
+  scrollToBottom(chatContent);
 }

@@ -169,6 +169,28 @@
   stroke-linejoin: round;
 }
 
+/* 照片消息（无气泡框、无虚线外框与无背景色） */
+.bubble-wrapper.image-wrapper .bubble-svg {
+  display: none;
+}
+
+.bubble.bubble-image {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bubble-image-img {
+  display: block;
+  max-width: 200px;
+  max-height: 240px;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
 /* ==================== 底部栏 ==================== */
 .bottom-bar {
   background-color: var(--color-bar-bg);
