@@ -122,6 +122,16 @@ function appendImageMessage(chatContent, imgSrc, isMe = true) {
     scrollToBottom(chatContent);
   };
 
+  // 点击图片展开大图预览
+  img.addEventListener('click', () => {
+    const imageOverlay = document.getElementById('image-overlay');
+    const imageOverlayImg = document.getElementById('image-overlay-img');
+    if (imageOverlay && imageOverlayImg) {
+      imageOverlayImg.src = imgSrc;
+      imageOverlay.classList.add('show');
+    }
+  });
+
   bubble.appendChild(img);
   wrapper.appendChild(bubble);
   row.appendChild(avatar);

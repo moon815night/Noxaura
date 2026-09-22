@@ -27,6 +27,8 @@
     const btnAlbum = document.getElementById('btn-album');
     const albumFileInput = document.getElementById('album-file-input');
 
+    const imageOverlay = document.getElementById('image-overlay');
+
     // 连发模式标记
     let isContinuousMode = false;
 
@@ -219,6 +221,13 @@
       });
     }
 
+    // 点击大图遮罩背景或大图即可关闭预览
+    if (imageOverlay) {
+      imageOverlay.addEventListener('click', () => {
+        imageOverlay.classList.remove('show');
+      });
+    }
+
     // 设置面板切换
     btnSettings.addEventListener('click', () => {
       settingsOverlay.classList.add('show');
@@ -240,6 +249,9 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         settingsOverlay.classList.remove('show');
+        if (imageOverlay) {
+          imageOverlay.classList.remove('show');
+        }
       }
     });
   });
