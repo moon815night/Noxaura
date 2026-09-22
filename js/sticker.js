@@ -47,20 +47,20 @@
         </svg>
       `));
 
-      // 2. 爱心 (我的表情包) - 改为描边风格，大左小右，不重合
+      // 2. 爱心 (我的表情包) - 线条粗细 stroke-width="2"，微调位置防止大爱心被裁剪
       tabsContainer.appendChild(createTabBtn('heart', `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" transform="translate(-1, 4) scale(0.75)"/>
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" transform="translate(15, 0) scale(0.35)"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" transform="translate(1.5, 3) scale(0.72)"/>
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" transform="translate(14.5, 1) scale(0.38)"/>
         </svg>
       `));
 
-      // 3. 星星 (联系人分组) - 改为描边风格，大左小右，不重合
+      // 3. 星星 (联系人分组) - 线条粗细 stroke-width="2"
       data.groups.forEach(g => {
         const iconHtml = g.icon || `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" transform="translate(-1, 4) scale(0.75)"/>
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" transform="translate(15, 0) scale(0.35)"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" transform="translate(0.5, 3) scale(0.72)"/>
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" transform="translate(15, 1) scale(0.35)"/>
           </svg>
         `;
         tabsContainer.appendChild(createTabBtn(g.id, iconHtml));
@@ -255,7 +255,7 @@
     function showGroupModal(group = null) {
       const data = global.StickerState.getData();
       const overlay = document.createElement('div');
-      overlay.className = 'dict-modal show';
+      overlay.className = 'dict-modal sticker-modal show';
       overlay.innerHTML = `
         <div class="dict-modal-content">
           <div class="dict-modal-title">${group ? '修改分组' : '新建分组'}</div>
@@ -308,7 +308,7 @@
     // 复用 dict.js 的弹窗样式
     function showConfirmModal(title, msg, onOk) {
       const overlay = document.createElement('div');
-      overlay.className = 'dict-modal show';
+      overlay.className = 'dict-modal sticker-modal show';
       overlay.innerHTML = `
         <div class="dict-modal-content">
           <div class="dict-modal-title">${title}</div>
