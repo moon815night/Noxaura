@@ -2,8 +2,8 @@
  * 动态计算并更新消息气泡 SVG 虚线外框路径
  */
 function updateBubbleSVG(wrapper) {
-  // 如果是图片消息，不需要计算与绘制 SVG 虚线外框
-  if (wrapper.classList.contains('image-wrapper')) return;
+  // 如果是图片消息或表情包，不需要计算与绘制 SVG 虚线外框
+  if (wrapper.classList.contains('image-wrapper') || wrapper.classList.contains('sticker-wrapper')) return;
 
   const bubble = wrapper.querySelector('.bubble');
   const svg = wrapper.querySelector('.bubble-svg');
@@ -21,29 +21,11 @@ function updateBubbleSVG(wrapper) {
 
   let d = '';
   if (isMe) {
-    // 我方气泡（尾巴画在最右端顶点 (w, h)，短小且紧密包裹背景）
-    d = `M ${r} 0 
-         L ${w - r} 0 
-         A ${r} ${r} 0 0 1 ${w} ${r} 
-         L ${w} ${h - 2} 
-         L ${w} ${h} 
-         L ${w - 6} ${h} 
-         L ${r} ${h} 
-         A ${r} ${r} 0 0 1 0 ${h - r} 
-         L 0 ${r} 
-         A ${r} ${r} 0 0 1 ${r} 0 Z`;
+    // 我方气泡
+    d = `M ${r} 0 L ${w - r} 0 A ${r} ${r} 0 0 1 ${w} ${r} L ${w} ${h - 2} L ${w} ${h} L ${w - 6} ${h} L ${r} ${h} A ${r} ${r} 0 0 1 0 ${h - r} L 0 ${r} A ${r} ${r} 0 0 1 ${r} 0 Z`;
   } else {
-    // 对方气泡（尾巴画在最左端顶点 (0, h)，短小且紧密包裹背景）
-    d = `M ${r} 0 
-         L ${w - r} 0 
-         A ${r} ${r} 0 0 1 ${w} ${r} 
-         L ${w} ${h - r} 
-         A ${r} ${r} 0 0 1 ${w - r} ${h} 
-         L 6 ${h} 
-         L 0 ${h} 
-         L 0 ${h - 2} 
-         L 0 ${r} 
-         A ${r} ${r} 0 0 1 ${r} 0 Z`;
+    // 对方气泡
+    d = `M ${r} 0 L ${w - r} 0 A ${r} ${r} 0 0 1 ${w} ${r} L ${w} ${h - r} A ${r} ${r} 0 0 1 ${w - r} ${h} L 6 ${h} L 0 ${h} L 0 ${h - 2} L 0 ${r} A ${r} ${r} 0 0 1 ${r} 0 Z`;
   }
   path.setAttribute('d', d);
 }
@@ -93,36 +75,25 @@ function appendMessage(chatContent, text, isMe = true) {
   updateBubbleSVG(wrapper);
   scrollToBottom(chatContent);
 
-  // 延迟一帧再次更新，确保在复杂布局或长文本折行稳定后，外框依然完美围住底色
-  setTimeout(() => {
-    updateBubbleSVG(wrapper);
-  }, 0);
+  setTimeout(() => { updateBubbleSVG(wrapper); }, 0);
 }
 
 /**
- * 生成并添加一条图片消息到界面（无气泡底色、无虚线框）
+ * 生成并添加一条图片消息到界面（相册照片）
  */
 function appendImageMessage(chatContent, imgSrc, isMe = true) {
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
-
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper image-wrapper';
-
   const bubble = document.createElement('div');
   bubble.className = 'bubble bubble-image';
-
   const img = document.createElement('img');
   img.className = 'bubble-image-img';
   img.src = imgSrc;
-  img.onload = () => {
-    scrollToBottom(chatContent);
-  };
-
-  // 点击图片展开大图预览
+  img.onload = () => { scrollToBottom(chatContent); };
   img.addEventListener('click', () => {
     const imageOverlay = document.getElementById('image-overlay');
     const imageOverlayImg = document.getElementById('image-overlay-img');
@@ -131,12 +102,34 @@ function appendImageMessage(chatContent, imgSrc, isMe = true) {
       imageOverlay.classList.add('show');
     }
   });
-
   bubble.appendChild(img);
   wrapper.appendChild(bubble);
   row.appendChild(avatar);
   row.appendChild(wrapper);
+  chatContent.appendChild(row);
+  scrollToBottom(chatContent);
+}
 
+/**
+ * 生成并添加一条表情包消息到界面（无气泡、无描边）
+ */
+function appendStickerMessage(chatContent, imgSrc, isMe = true) {
+  const row = document.createElement('div');
+  row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bubble-wrapper sticker-wrapper';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble bubble-sticker';
+  const img = document.createElement('img');
+  img.className = 'sticker-img';
+  img.src = imgSrc;
+  img.onload = () => { scrollToBottom(chatContent); };
+  bubble.appendChild(img);
+  wrapper.appendChild(bubble);
+  row.appendChild(avatar);
+  row.appendChild(wrapper);
   chatContent.appendChild(row);
   scrollToBottom(chatContent);
 }

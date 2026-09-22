@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/dict.css">
+  <link rel="stylesheet" href="css/sticker.css">
 </head>
 <body>
 
@@ -104,7 +105,7 @@
   <div class="feature-panel" id="feature-panel">
     <div class="feature-panel-content">
       <div class="feature-grid">
-        <div class="feature-item">
+        <div class="feature-item" id="btn-emoji-panel">
           <div class="feature-btn">
             <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10.58 17.58Q10.43 17.95 10.74 18.33Q11.05 18.70 11.49 18.97Q11.93 19.25 12.92 19.65Q13.90 20.05 13.86 20.37Q13.81 20.70 13.34 21.49Q12.87 22.28 12.73 23.19Q12.58 24.09 12.64 25.35Q12.69 26.60 13.10 27.24Q13.50 27.87 14.34 28.32Q15.18 28.78 16.07 29.05Q16.95 29.33 17.77 29.39Q18.58 29.44 20.04 29.30Q21.51 29.16 22.20 28.76Q22.90 28.37 23.35 27.53Q23.79 26.70 23.84 25.09Q23.88 23.49 23.72 21.63Q23.56 19.77 23.59 18.98Q23.63 18.19 23.74 17.91Q23.85 17.63 24.63 16.90Q25.41 16.16 25.58 15.87Q25.76 15.58 25.87 15.09Q25.97 14.60 25.92 14.00Q25.86 13.40 25.94 13.14L26.02 12.88"/>
@@ -223,6 +224,22 @@
           <span>语音</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 表情面板 -->
+  <div class="sticker-panel" id="sticker-panel">
+    <div class="sticker-header">
+      <div class="sticker-tabs" id="sticker-tabs">
+        <!-- 动态渲染：齿轮、爱心、星星分组 -->
+      </div>
+    </div>
+    <div class="sticker-divider">
+      <div class="divider-solid"></div>
+      <div class="divider-dashed"></div>
+    </div>
+    <div class="sticker-body" id="sticker-body">
+      <!-- 动态渲染：标题、网格、折叠栏 -->
     </div>
   </div>
 
@@ -363,11 +380,14 @@
 
 <!-- 隐藏的本地图片多选 input 框 -->
 <input type="file" id="album-file-input" accept="image/*" multiple style="display: none;">
+<!-- 隐藏的表情包导入 input 框 -->
+<input type="file" id="sticker-file-input" accept="image/*" multiple style="display: none;">
 
 <!-- JS 引入 -->
 <script src="js/ui.js" defer></script>
 <script src="js/state.js" defer></script>
 <script src="js/dict.js" defer></script>
+<script src="js/sticker.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>

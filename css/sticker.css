@@ -1,0 +1,197 @@
+/* ==================== 表情面板样式 ==================== */
+.sticker-panel {
+  height: 0;
+  overflow: hidden;
+  background-color: var(--color-bar-bg);
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.sticker-panel.open {
+  height: 50vh;
+}
+
+.sticker-header {
+  padding: 8px 12px 4px 12px;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sticker-header::-webkit-scrollbar {
+  display: none;
+}
+
+.sticker-tabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sticker-tab-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-stroke-bubble);
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.sticker-tab-btn.active {
+  background-color: var(--color-primary-green);
+}
+
+.sticker-tab-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* 分割线：实线 + 虚线（短横加点） */
+.sticker-divider {
+  padding: 0 12px;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.divider-solid {
+  height: 1px;
+  background-color: rgba(119, 92, 85, 0.4);
+}
+
+.divider-dashed {
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(119, 92, 85, 0.4) 4px, transparent 2px, rgba(119, 92, 85, 0.4) 1px, transparent 2px);
+  background-size: 9px 1px;
+  background-repeat: repeat-x;
+}
+
+.sticker-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 20px 12px;
+  position: relative;
+}
+
+.sticker-group-title {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #775c55;
+}
+
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.sticker-item {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sticker-item img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+}
+
+.sticker-item.add-btn {
+  border: 1.5px dashed rgba(119, 92, 85, 0.4);
+  background: transparent;
+}
+
+.sticker-item.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-accent-green);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* 折叠栏 */
+.sticker-fold-btn {
+  grid-column: span 5;
+  text-align: center;
+  font-size: 12px;
+  color: #9dadab;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* 删除键：右下角，房子图标 */
+.btn-sticker-delete {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(119, 92, 85, 0.15);
+  border-radius: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.btn-sticker-delete.show {
+  display: flex;
+}
+
+/* 气泡中的表情包样式 */
+.bubble.bubble-sticker {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.sticker-img {
+  display: block;
+  max-width: 120px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+}
+
+/* 管理页面色盘 */
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.color-preset {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.1);
+}
