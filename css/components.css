@@ -200,6 +200,10 @@
   background-color: var(--color-primary-green);
 }
 
+.btn-bubbles.active svg circle {
+  fill: transparent;
+}
+
 .btn-bubbles:active {
   background-color: var(--color-btn-active-bg);
 }
