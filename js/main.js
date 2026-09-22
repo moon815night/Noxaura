@@ -12,6 +12,7 @@
   'use strict';
 
   document.addEventListener('DOMContentLoaded', () => {
+    const chatApp = document.querySelector('.chat-app');
     const chatContent = document.getElementById('chat-content');
     const chatInput = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send');
@@ -32,6 +33,41 @@
     // 页面资源全部加载完成后再重绘一次
     window.addEventListener('load', refreshAllBubbles);
     setTimeout(refreshAllBubbles, 50);
+
+    // ==================== 移动端键盘调起适配（微信逻辑） ====================
+    if (window.visualViewport) {
+      const handleViewportResize = () => {
+        // 软键盘弹起时，把容器高度限制为可视高度，顶部栏固定不动，输入框上移
+        const currentViewportHeight = window.visualViewport.height;
+        if (chatApp) {
+          chatApp.style.height = `${currentViewportHeight}px`;
+        }
+        scrollToBottom(chatContent);
+        refreshAllBubbles();
+      };
+
+      window.visualViewport.addEventListener('resize', handleViewportResize);
+      window.visualViewport.addEventListener('scroll', handleViewportResize);
+    }
+
+    // 输入框聚焦时滚动到底部，确保能看清最新发送的消息
+    chatInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        scrollToBottom(chatContent);
+      }, 150);
+      setTimeout(() => {
+        scrollToBottom(chatContent);
+      }, 300);
+    });
+
+    // 输入框失焦时恢复
+    chatInput.addEventListener('blur', () => {
+      if (chatApp && !window.visualViewport) {
+        chatApp.style.height = '';
+      }
+    });
+
+    // ==================== 按钮与交互逻辑 ====================
 
     // 更新发送按钮高亮状态
     function updateSendBtnState() {
