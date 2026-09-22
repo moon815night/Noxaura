@@ -196,15 +196,15 @@
   border: 1px solid rgba(0,0,0,0.1);
 }
 
-/* 齿轮（设置）页面及相关弹窗内的按钮：取消渐变，采用纯色背景 */
+/* 齿轮（设置）页面及相关弹窗内的按钮：莫兰迪风格薄荷绿纯色 */
 .sticker-body .cute-btn,
 .sticker-modal .cute-btn {
-  background: var(--color-primary-green);
+  background: #94b8a3;
 }
 
 .sticker-body .cute-btn:active,
 .sticker-modal .cute-btn:active {
-  background: var(--color-accent-green);
+  background: #81a690;
 }
 
 .sticker-body .cute-btn.danger,
