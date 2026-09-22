@@ -6,7 +6,7 @@
  *   正确做法：在 index.html 里按 ui.js → state.js → dict.js → main.js 的顺序，
  *            用普通 <script src="..." defer></script> 引入。
  *
- * 依赖：js/ui.js 提供的全局函数 refreshAllBubbles / appendMessage
+ * 依赖：js/ui.js 提供的全局函数 refreshAllBubbles / appendMessage / scrollToBottom
  */
 (function () {
   'use strict';
@@ -16,6 +16,9 @@
     const chatInput = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send');
     const btnBubbles = document.querySelector('.btn-bubbles');
+    const btnKaomoji = document.querySelector('.btn-kaomoji');
+    const featurePanel = document.getElementById('feature-panel');
+    const bottomBar = document.querySelector('.bottom-bar');
     const btnSettings = document.getElementById('btn-settings');
     const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
@@ -49,6 +52,22 @@
           btnBubbles.classList.remove('active');
         }
         updateSendBtnState();
+      });
+    }
+
+    // 功能键点击事件：开启 / 关闭功能面板，展开时整个底部输入栏上移
+    if (btnKaomoji && featurePanel) {
+      btnKaomoji.addEventListener('click', () => {
+        const isOpen = featurePanel.classList.toggle('open');
+        btnKaomoji.classList.toggle('active', isOpen);
+        if (bottomBar) {
+          bottomBar.classList.toggle('feature-open', isOpen);
+        }
+        // 动画过渡后刷新气泡和视口
+        setTimeout(() => {
+          scrollToBottom(chatContent);
+          refreshAllBubbles();
+        }, 300);
       });
     }
 

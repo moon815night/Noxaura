@@ -88,8 +88,8 @@
     <!-- 2. 输入框 -->
     <input type="text" class="chat-input" id="chat-input" placeholder="输入消息..." />
 
-    <!-- 3. 颜文字键 -->
-    <button class="btn-kaomoji" aria-label="颜文字">ᗜ֊ᗜ</button>
+    <!-- 3. 功能键 -->
+    <button class="btn-kaomoji" aria-label="功能键">ᗜ֊ᗜ</button>
 
     <!-- 4. 发送键 -->
     <button class="btn-send" id="btn-send" aria-label="发送">
@@ -99,6 +99,52 @@
       </svg>
     </button>
   </footer>
+
+  <!-- 功能键展开的子页面面板 -->
+  <div class="feature-panel" id="feature-panel">
+    <div class="feature-panel-content">
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+          <span>相册</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <span>拍摄</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <span>位置</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-stroke-bubble)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/>
+              <circle cx="18" cy="16" r="3"/>
+            </svg>
+          </div>
+          <span>语音</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- 五、全屏设置面板遮罩 -->
   <div class="settings-overlay" id="settings-overlay">
