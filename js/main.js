@@ -191,21 +191,27 @@
         const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
 
-        let processedCount = 0;
+        // 使用 Promise.all 保证照片按选择顺序读取完成
+        const readPromises = files.map((file) => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (evt) => resolve(evt.target.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
+          });
+        });
 
-        files.forEach((file) => {
-          const reader = new FileReader();
-          reader.onload = (evt) => {
-            const imgSrc = evt.target.result;
+        Promise.all(readPromises).then((imgSrcs) => {
+          const validImgSrcs = imgSrcs.filter(Boolean);
+          if (validImgSrcs.length === 0) return;
+
+          // 顺序发送所有选中照片
+          validImgSrcs.forEach((imgSrc) => {
             appendImageMessage(chatContent, imgSrc, true);
-            processedCount++;
+          });
 
-            // 所有选中的照片发送完毕后触发对方回复
-            if (processedCount === files.length) {
-              triggerOpponentReply();
-            }
-          };
-          reader.readAsDataURL(file);
+          // 照片全部发送完毕后，统一按一次回复逻辑触发回复（1-3条）
+          triggerOpponentReply();
         });
 
         // 重置 input 以便于再次选择相同图片
