@@ -596,9 +596,8 @@
 }
 
 .feature-btn svg {
-  width: 28px;
-  height: 28px;
-  overflow: visible;
+  width: 42px;
+  height: 42px;
 }
 
 .feature-btn:active {
