@@ -325,7 +325,14 @@
     .msg-column { display: flex; flex-direction: column; max-width: 72%; }
     .msg-row.me .msg-column { align-items: flex-end; }
     .msg-row.opponent .msg-column { align-items: flex-start; }
-    .msg-time { font-size: 10.5px; color: var(--color-stroke-bubble); margin-top: 3px; padding: 0 2px; font-weight: 500; }
+    .msg-time {
+      font-size: 10.5px;
+      color: var(--color-stroke-bubble);
+      margin-top: 3px;
+      padding: 0 2px;
+      font-weight: 500;
+      font-family: "Chalkboard SE", "Comic Sans MS", "Yuanti SC", "华文细黑", cursive, sans-serif;
+    }
     .avatar { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
     .msg-row.opponent .avatar { background-color: var(--color-avatar-opponent-bg); }
     .msg-row.me .avatar { background-color: var(--color-avatar-me-bg); }
