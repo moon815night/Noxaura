@@ -290,7 +290,7 @@
   stroke-width: 1.5px;
   stroke-dasharray: 24 4 2 4 7 4 15 4;
   stroke-linecap: round;
-  stroke-linejoin="round";
+  stroke-linejoin: round;
 }
 
 /* 照片消息 */
