@@ -85,6 +85,10 @@
       quotePreviewBar.classList.remove('show');
     }
 
+    // 暴露方法给外部模块（如 sticker.js）使用
+    window.getCurrentQuoteData = () => currentQuoteData;
+    window.clearQuotePreview = clearQuotePreview;
+
     if (btnCancelQuote) {
       btnCancelQuote.addEventListener('click', clearQuotePreview);
     }
@@ -174,13 +178,13 @@
       const text = chatInput.value.trim();
       if (!text) return false;
 
-      // 如果处于二次编辑状态，原地修改该消息
+      // 如果处于二次编辑状态，原地修改该消息（不触发新的回复）
       if (currentEditMsgId) {
         window.ChatState.updateMessage(currentEditMsgId, { text });
         updateMessageInDOM(currentEditMsgId, text);
         currentEditMsgId = null;
         chatInput.value = '';
-        return true;
+        return 'edit';
       }
 
       appendMessage(chatContent, text, true, null, true, currentQuoteData);
@@ -191,22 +195,21 @@
 
     chatInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const sent = handleSendText();
-        if (sent && !isContinuousMode && !currentEditMsgId) {
+        const res = handleSendText();
+        if (res) {
           updateSendBtnState();
-          triggerOpponentReply();
+          if (res === true && !isContinuousMode) {
+            triggerOpponentReply();
+          }
         }
       }
     });
 
     btnSend.addEventListener('click', () => {
-      if (isContinuousMode) {
-        handleSendText();
+      const res = handleSendText();
+      if (res) {
         updateSendBtnState();
-        triggerOpponentReply();
-      } else {
-        if (handleSendText()) {
-          updateSendBtnState();
+        if (res === true) {
           triggerOpponentReply();
         }
       }
@@ -228,8 +231,11 @@
         ctxBtnEdit.style.display = 'none';
       }
 
-      ctxMenu.style.left = `${Math.min(x, window.innerWidth - 180)}px`;
-      ctxMenu.style.top = `${Math.max(y - 10, 60)}px`;
+      const clampedX = Math.max(90, Math.min(x, window.innerWidth - 90));
+      const clampedY = Math.max(100, Math.min(y, window.innerHeight - 60));
+
+      ctxMenu.style.left = `${clampedX}px`;
+      ctxMenu.style.top = `${clampedY}px`;
       ctxMenuOverlay.classList.add('show');
     }
 
@@ -285,7 +291,7 @@
       });
     });
 
-    // 菜单按钮 3：编辑 (仅限用户消息)
+    // 菜单按钮 3：编辑 (仅限用户文本消息)
     ctxBtnEdit.addEventListener('click', () => {
       hideContextMenu();
       const history = window.ChatState.getHistory();
@@ -306,16 +312,23 @@
         window.ChatState.deleteMessage(activeLongPressMsgId);
         loadChatHistoryUI();
       }, () => {
-        // 进入多选删除模式
-        enterMultiSelectMode();
+        // 进入多选删除模式并勾选当前选中的消息
+        enterMultiSelectMode(activeLongPressMsgId);
       });
     });
 
     // 多选模式
-    function enterMultiSelectMode() {
+    function enterMultiSelectMode(initialMsgId) {
       isMultiSelectMode = true;
       document.querySelector('.chat-app').classList.add('multi-select-mode');
       multiSelectBar.classList.add('show');
+      if (initialMsgId) {
+        const targetRow = document.querySelector(`.msg-row[data-msg-id="${initialMsgId}"]`);
+        if (targetRow) {
+          const cb = targetRow.querySelector('.msg-select-checkbox');
+          if (cb) cb.checked = true;
+        }
+      }
       updateMultiSelectCount();
     }
 
@@ -330,6 +343,21 @@
       const selected = document.querySelectorAll('.msg-select-checkbox:checked').length;
       multiSelectCount.textContent = `已选择 ${selected} 条消息`;
     }
+
+    // 点击消息行切换选中状态
+    chatContent.addEventListener('click', (e) => {
+      if (!isMultiSelectMode) return;
+      const row = e.target.closest('.msg-row');
+      if (!row) return;
+      
+      if (e.target.classList.contains('msg-select-checkbox')) return;
+      
+      const cb = row.querySelector('.msg-select-checkbox');
+      if (cb) {
+        cb.checked = !cb.checked;
+        updateMultiSelectCount();
+      }
+    });
 
     chatContent.addEventListener('change', (e) => {
       if (e.target.classList.contains('msg-select-checkbox')) {

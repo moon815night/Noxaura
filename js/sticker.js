@@ -39,7 +39,7 @@
       const data = global.StickerState.getData();
       tabsContainer.innerHTML = '';
 
-      // 1. 齿轮 (设置) - 线条粗细与发送键纸飞机一致 (stroke-width="2.2")
+      // 1. 齿轮 (设置)
       tabsContainer.appendChild(createTabBtn('gear', `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
@@ -47,7 +47,7 @@
         </svg>
       `));
 
-      // 2. 爱心 (我的表情包) - 线条粗细 stroke-width="2.2"，缩小右上小爱心并分开
+      // 2. 爱心 (我的表情包)
       tabsContainer.appendChild(createTabBtn('heart', `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" transform="translate(1, 3.2) scale(0.68)"/>
@@ -55,7 +55,7 @@
         </svg>
       `));
 
-      // 3. 星星 (联系人分组) - 线条粗细 stroke-width="2.2"
+      // 3. 星星 (联系人分组)
       data.groups.forEach(g => {
         const iconHtml = g.icon || `
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -176,7 +176,9 @@
 
     function sendSticker(s) {
       const chatContent = document.getElementById('chat-content');
-      appendStickerMessage(chatContent, s.src, true);
+      const quoteData = window.getCurrentQuoteData ? window.getCurrentQuoteData() : null;
+      appendStickerMessage(chatContent, s.src, true, null, true, quoteData);
+      if (window.clearQuotePreview) window.clearQuotePreview();
       if (currentTab === 'heart') global.StickerState.recordUsage(s.id);
       
       if (!window.isContinuousMode()) {
