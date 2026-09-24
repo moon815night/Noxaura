@@ -110,7 +110,6 @@ function applySystemStyles() {
 
   styleEl.innerHTML = `
     ${fontFaceCss}
-    html, body { font-size: ${(s.fonts && s.fonts.globalFontSize) || 14}px; }
     .chat-app { ${chatBgCss} }
     .top-bar, .bottom-bar, .feature-panel, .sticker-panel { ${barBgCss} }
     

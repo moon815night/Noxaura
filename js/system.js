@@ -4,11 +4,14 @@
 (function (global) {
   'use strict';
 
+  let isDirty = false;
+
   document.addEventListener('DOMContentLoaded', () => {
     const btnOpenSystem = document.getElementById('btn-open-system');
     const systemOverlay = document.getElementById('system-overlay');
     const btnCloseSystem = document.getElementById('btn-close-system');
     const btnBackSystem = document.getElementById('btn-back-system');
+    const btnSaveSystem = document.getElementById('btn-save-system');
 
     if (!systemOverlay) return;
 
@@ -29,29 +32,53 @@
         initSystemFormValues();
         renderPresetsUI();
         updateBubblePreview();
+        isDirty = false;
       });
     }
 
-    // 关闭系统面板
+    // 关闭系统面板逻辑（带未保存防误触提醒）
+    function tryCloseSystem(onApproved) {
+      if (isDirty) {
+        showConfirmModal('未保存提醒', '您有修改尚未保存，确认要放弃并离开吗？', () => {
+          isDirty = false;
+          onApproved();
+        });
+      } else {
+        onApproved();
+      }
+    }
+
     if (btnCloseSystem) {
       btnCloseSystem.addEventListener('click', () => {
-        systemOverlay.classList.remove('show');
+        tryCloseSystem(() => systemOverlay.classList.remove('show'));
       });
     }
 
     if (btnBackSystem) {
       btnBackSystem.addEventListener('click', () => {
-        systemOverlay.classList.remove('show');
-        const settingsOverlay = document.getElementById('settings-overlay');
-        if (settingsOverlay) settingsOverlay.classList.add('show');
+        tryCloseSystem(() => {
+          systemOverlay.classList.remove('show');
+          const settingsOverlay = document.getElementById('settings-overlay');
+          if (settingsOverlay) settingsOverlay.classList.add('show');
+        });
       });
     }
 
     systemOverlay.addEventListener('click', (e) => {
       if (e.target === systemOverlay) {
-        systemOverlay.classList.remove('show');
+        tryCloseSystem(() => systemOverlay.classList.remove('show'));
       }
     });
+
+    // 保存按钮逻辑
+    if (btnSaveSystem) {
+      btnSaveSystem.addEventListener('click', () => {
+        saveAllFormValuesToState();
+        global.applySystemStyles();
+        isDirty = false;
+        alertModal('系统设置已成功保存！');
+      });
+    }
 
     bindSystemEvents();
   });
@@ -59,9 +86,11 @@
   function initSystemFormValues() {
     const s = global.SystemState.getSettings();
 
-    // 资料
+    // 资料与头像预览
     setVal('sys-nickname-opp', s.nicknames.opponent);
     setVal('sys-nickname-me', s.nicknames.me);
+    updateAvatarPreview('sys-avatar-opp-preview', s.avatars.opponent);
+    updateAvatarPreview('sys-avatar-me-preview', s.avatars.me);
 
     // 气泡设置 (他的/我的)
     setVal('sys-bubble-opp-bg', s.bubbles.opponent.bgColor);
@@ -76,7 +105,6 @@
     setVal('sys-bubble-me-text', s.bubbles.me.textColor);
     setVal('sys-bubble-me-size', s.bubbles.me.fontSize);
 
-    setVal('sys-global-font-size', s.fonts.globalFontSize || 14);
     setVal('sys-bubble-css', s.bubbles.css || '');
 
     // 主题
@@ -102,6 +130,62 @@
     setVal('sys-proactive-unit', s.replyStrategy.proactiveUnit);
   }
 
+  function saveAllFormValuesToState() {
+    global.SystemState.updateSettings({
+      nicknames: {
+        opponent: getVal('sys-nickname-opp'),
+        me: getVal('sys-nickname-me')
+      },
+      bubbles: {
+        opponent: {
+          bgColor: getVal('sys-bubble-opp-bg'),
+          strokeColor: getVal('sys-bubble-opp-stroke'),
+          textColor: getVal('sys-bubble-opp-text'),
+          fontSize: parseInt(getVal('sys-bubble-opp-size')) || 14
+        },
+        me: {
+          bgColor: getVal('sys-bubble-me-bg'),
+          strokeColor: getVal('sys-bubble-me-stroke'),
+          textColor: getVal('sys-bubble-me-text'),
+          fontSize: parseInt(getVal('sys-bubble-me-size')) || 14
+        },
+        css: getVal('sys-bubble-css')
+      },
+      theme: {
+        topBottomBg: getVal('sys-bar-bg'),
+        css: getVal('sys-theme-css')
+      },
+      chatBg: {
+        type: getVal('sys-chatbg-type'),
+        color1: getVal('sys-chatbg-color1'),
+        color2: getVal('sys-chatbg-color2'),
+        gradientType: getVal('sys-chatbg-grad-type')
+      },
+      replyStrategy: {
+        minDelay: parseFloat(getVal('sys-reply-delay-min')) || 2,
+        maxDelay: parseFloat(getVal('sys-reply-delay-max')) || 5,
+        replyCountMin: parseInt(getVal('sys-reply-count-min')) || 1,
+        replyCountMax: parseInt(getVal('sys-reply-count-max')) || 3,
+        proactiveProb: parseInt(getVal('sys-proactive-prob')) || 20,
+        proactiveIntervalMin: parseFloat(getVal('sys-proactive-min')) || 10,
+        proactiveIntervalMax: parseFloat(getVal('sys-proactive-max')) || 30,
+        proactiveUnit: getVal('sys-proactive-unit') || 'min'
+      }
+    });
+  }
+
+  function updateAvatarPreview(imgId, srcUrl) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    if (srcUrl) {
+      img.src = srcUrl;
+      img.classList.add('show');
+    } else {
+      img.src = '';
+      img.classList.remove('show');
+    }
+  }
+
   function renderPresetsUI() {
     const s = global.SystemState.getSettings();
 
@@ -114,17 +198,14 @@
         card.className = `preset-card ${s.bubbles.activePreset === idx ? 'active' : ''}`;
         card.textContent = p.name;
         card.onclick = () => {
-          global.SystemState.updateSettings({
-            bubbles: {
-              activePreset: idx,
-              opponent: { bgColor: p.oppBg },
-              me: { bgColor: p.meBg }
-            }
-          });
-          initSystemFormValues();
+          setVal('sys-bubble-opp-bg', p.oppBg);
+          setVal('sys-bubble-opp-bg-hex', p.oppBg);
+          setVal('sys-bubble-me-bg', p.meBg);
+          setVal('sys-bubble-me-hex', p.meBg);
+          s.bubbles.activePreset = idx;
           renderPresetsUI();
           updateBubblePreview();
-          global.applySystemStyles();
+          markDirty();
         };
         bGrid.appendChild(card);
       });
@@ -139,18 +220,13 @@
         card.className = `preset-card ${s.chatBg.activePreset === idx ? 'active' : ''}`;
         card.textContent = p.name;
         card.onclick = () => {
-          global.SystemState.updateSettings({
-            chatBg: {
-              activePreset: idx,
-              type: p.type,
-              color1: p.color1,
-              color2: p.color2,
-              gradientType: p.gradientType
-            }
-          });
-          initSystemFormValues();
+          setVal('sys-chatbg-type', p.type);
+          setVal('sys-chatbg-color1', p.color1);
+          setVal('sys-chatbg-color2', p.color2);
+          setVal('sys-chatbg-grad-type', p.gradientType);
+          s.chatBg.activePreset = idx;
           renderPresetsUI();
-          global.applySystemStyles();
+          markDirty();
         };
         bgGrid.appendChild(card);
       });
@@ -161,175 +237,160 @@
     // 头像上传
     bindImageUpload('sys-avatar-opp-file', (dataUrl) => {
       global.SystemState.updateSettings({ avatars: { opponent: dataUrl } });
-      global.applySystemStyles();
+      updateAvatarPreview('sys-avatar-opp-preview', dataUrl);
+      markDirty();
     });
     bindImageUpload('sys-avatar-me-file', (dataUrl) => {
       global.SystemState.updateSettings({ avatars: { me: dataUrl } });
-      global.applySystemStyles();
+      updateAvatarPreview('sys-avatar-me-preview', dataUrl);
+      markDirty();
     });
 
     // 昵称修改
-    onInput('sys-nickname-opp', (val) => {
-      global.SystemState.updateSettings({ nicknames: { opponent: val } });
-      global.applySystemStyles();
-    });
-    onInput('sys-nickname-me', (val) => {
-      global.SystemState.updateSettings({ nicknames: { me: val } });
-      global.applySystemStyles();
-    });
+    onInput('sys-nickname-opp', markDirty);
+    onInput('sys-nickname-me', markDirty);
 
     // 他的气泡绑定
-    bindColorSync('sys-bubble-opp-bg', 'sys-bubble-opp-bg-hex', (c) => {
-      global.SystemState.updateSettings({ bubbles: { opponent: { bgColor: c } } });
+    bindColorSync('sys-bubble-opp-bg', 'sys-bubble-opp-bg-hex', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-opp-stroke', (val) => {
-      global.SystemState.updateSettings({ bubbles: { opponent: { strokeColor: val } } });
+    onInput('sys-bubble-opp-stroke', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-opp-text', (val) => {
-      global.SystemState.updateSettings({ bubbles: { opponent: { textColor: val } } });
+    onInput('sys-bubble-opp-text', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-opp-size', (val) => {
-      global.SystemState.updateSettings({ bubbles: { opponent: { fontSize: parseInt(val) || 14 } } });
+    onInput('sys-bubble-opp-size', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
 
     // 我的气泡绑定
-    bindColorSync('sys-bubble-me-bg', 'sys-bubble-me-hex', (c) => {
-      global.SystemState.updateSettings({ bubbles: { me: { bgColor: c } } });
+    bindColorSync('sys-bubble-me-bg', 'sys-bubble-me-hex', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-me-stroke', (val) => {
-      global.SystemState.updateSettings({ bubbles: { me: { strokeColor: val } } });
+    onInput('sys-bubble-me-stroke', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-me-text', (val) => {
-      global.SystemState.updateSettings({ bubbles: { me: { textColor: val } } });
+    onInput('sys-bubble-me-text', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
-    onInput('sys-bubble-me-size', (val) => {
-      global.SystemState.updateSettings({ bubbles: { me: { fontSize: parseInt(val) || 14 } } });
+    onInput('sys-bubble-me-size', () => {
       updateBubblePreview();
-      global.applySystemStyles();
+      markDirty();
     });
 
-    // 字体与 CSS
-    onInput('sys-global-font-size', (val) => {
-      global.SystemState.updateSettings({ fonts: { globalFontSize: parseInt(val) || 14 } });
-      global.applySystemStyles();
-    });
+    // 字体上传
     bindImageUpload('sys-font-file', (fontBase64) => {
       global.SystemState.updateSettings({ fonts: { fontCustom: fontBase64 } });
-      global.applySystemStyles();
+      markDirty();
     });
 
-    onClick('btn-apply-bubble-css', () => {
-      const code = document.getElementById('sys-bubble-css').value;
-      global.SystemState.updateSettings({ bubbles: { css: code } });
-      global.applySystemStyles();
+    // 气泡 CSS 应用、复制初始与重置
+    onClick('btn-apply-bubble-css', markDirty);
+    onClick('btn-copy-default-bubble-css', () => {
+      const defaultBubbleCss = `/* 消息气泡专属 CSS 自定义示例 */
+.msg-row.opponent .bubble {
+  border-radius: 14px 14px 14px 2px !important;
+}
+.msg-row.me .bubble {
+  border-radius: 14px 14px 2px 14px !important;
+}`;
+      navigator.clipboard.writeText(defaultBubbleCss).then(() => alertModal('初始气泡 CSS 模板已成功复制到剪贴板！'));
     });
     onClick('btn-reset-bubble-css', () => {
-      document.getElementById('sys-bubble-css').value = '';
-      global.SystemState.updateSettings({ bubbles: { css: '' } });
-      global.applySystemStyles();
+      setVal('sys-bubble-css', '');
+      markDirty();
     });
 
     // 顶底栏背景
-    bindColorSync('sys-bar-bg', 'sys-bar-bg-hex', (c) => {
-      global.SystemState.updateSettings({ theme: { topBottomBg: c } });
-      global.applySystemStyles();
-    });
+    bindColorSync('sys-bar-bg', 'sys-bar-bg-hex', markDirty);
     bindImageUpload('sys-bar-img-file', (dataUrl) => {
       global.SystemState.updateSettings({ theme: { topBottomImg: dataUrl } });
-      global.applySystemStyles();
+      markDirty();
     });
 
-    // 主题 CSS
-    onClick('btn-apply-theme-css', () => {
-      const code = document.getElementById('sys-theme-css').value;
-      global.SystemState.updateSettings({ theme: { css: code } });
-      global.applySystemStyles();
-    });
+    // 全局主题 CSS 应用与复制（包含顶底栏、气泡、背景及字体全套 CSS 变量）
+    onClick('btn-apply-theme-css', markDirty);
     onClick('btn-copy-default-theme-css', () => {
-      const defaultCss = `:root {\n  --bg-gradient-center: #dcfae2;\n  --bg-gradient-100: #fbfefc;\n  --color-bar-bg: #eef8f0;\n}`;
-      navigator.clipboard.writeText(defaultCss).then(() => alert('默认主题 CSS 模板已复制到剪贴板'));
+      const defaultCss = `/* 包含顶底栏、气泡、背景及字体的全局主题 CSS */
+:root {
+  /* 聊天界面背景颜色与渐变 */
+  --bg-gradient-center: #dcfae2;
+  --bg-gradient-100: #fbfefc;
+
+  /* 顶部栏与底部栏背景 */
+  --color-bar-bg: #eef8f0;
+
+  /* 聊天文字与描边颜色 */
+  --color-text-main: #2e1f19;
+  --color-stroke-bubble: #775c55;
+
+  /* 对方与我的气泡默认背景色 */
+  --color-bubble-opponent: #f2fbfc;
+  --color-bubble-me: #d5eae3;
+}`;
+      navigator.clipboard.writeText(defaultCss).then(() => alertModal('包含全套配置的默认主题 CSS 模板已成功复制！'));
     });
 
     // 聊天背景
-    onInput('sys-chatbg-type', (val) => {
-      global.SystemState.updateSettings({ chatBg: { type: val } });
-      global.applySystemStyles();
-    });
-    bindColorSync('sys-chatbg-color1', null, (c) => {
-      global.SystemState.updateSettings({ chatBg: { color1: c } });
-      global.applySystemStyles();
-    });
-    bindColorSync('sys-chatbg-color2', null, (c) => {
-      global.SystemState.updateSettings({ chatBg: { color2: c } });
-      global.applySystemStyles();
-    });
-    onInput('sys-chatbg-grad-type', (val) => {
-      global.SystemState.updateSettings({ chatBg: { gradientType: val } });
-      global.applySystemStyles();
-    });
+    onInput('sys-chatbg-type', markDirty);
+    bindColorSync('sys-chatbg-color1', null, markDirty);
+    bindColorSync('sys-chatbg-color2', null, markDirty);
+    onInput('sys-chatbg-grad-type', markDirty);
     bindImageUpload('sys-chatbg-img-file', (dataUrl) => {
       global.SystemState.updateSettings({ chatBg: { type: 'image', image: dataUrl } });
-      global.applySystemStyles();
+      markDirty();
     });
     onClick('btn-reset-chatbg', () => {
-      global.SystemState.updateSettings({
-        chatBg: { type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial', image: '' }
-      });
-      initSystemFormValues();
-      global.applySystemStyles();
+      setVal('sys-chatbg-type', 'gradient');
+      setVal('sys-chatbg-color1', '#dcfae2');
+      setVal('sys-chatbg-color2', '#fbfefc');
+      setVal('sys-chatbg-grad-type', 'radial');
+      markDirty();
     });
 
     // 回复策略
-    const updateReplyStrategy = () => {
-      global.SystemState.updateSettings({
-        replyStrategy: {
-          minDelay: parseFloat(getVal('sys-reply-delay-min')) || 2,
-          maxDelay: parseFloat(getVal('sys-reply-delay-max')) || 5,
-          replyCountMin: parseInt(getVal('sys-reply-count-min')) || 1,
-          replyCountMax: parseInt(getVal('sys-reply-count-max')) || 3,
-          proactiveProb: parseInt(getVal('sys-proactive-prob')) || 20,
-          proactiveIntervalMin: parseFloat(getVal('sys-proactive-min')) || 10,
-          proactiveIntervalMax: parseFloat(getVal('sys-proactive-max')) || 30,
-          proactiveUnit: getVal('sys-proactive-unit') || 'min'
-        }
-      });
-    };
-
     ['sys-reply-delay-min', 'sys-reply-delay-max', 'sys-reply-count-min', 'sys-reply-count-max', 'sys-proactive-prob', 'sys-proactive-min', 'sys-proactive-max', 'sys-proactive-unit'].forEach(id => {
-      onInput(id, updateReplyStrategy);
+      onInput(id, markDirty);
     });
+  }
+
+  function markDirty() {
+    isDirty = true;
   }
 
   function updateBubblePreview() {
     const oppPrev = document.getElementById('prev-bubble-opp');
     const mePrev = document.getElementById('prev-bubble-me');
-    const s = global.SystemState.getSettings();
+
+    const oppBg = getVal('sys-bubble-opp-bg');
+    const oppStroke = getVal('sys-bubble-opp-stroke');
+    const oppText = getVal('sys-bubble-opp-text');
+    const oppSize = getVal('sys-bubble-opp-size');
+
+    const meBg = getVal('sys-bubble-me-bg');
+    const meStroke = getVal('sys-bubble-me-stroke');
+    const meText = getVal('sys-bubble-me-text');
+    const meSize = getVal('sys-bubble-me-size');
 
     if (oppPrev) {
-      oppPrev.style.backgroundColor = s.bubbles.opponent.bgColor;
-      oppPrev.style.color = s.bubbles.opponent.textColor;
-      oppPrev.style.fontSize = `${s.bubbles.opponent.fontSize}px`;
-      oppPrev.style.borderColor = s.bubbles.opponent.strokeColor;
+      oppPrev.style.backgroundColor = oppBg;
+      oppPrev.style.color = oppText;
+      oppPrev.style.fontSize = `${parseInt(oppSize) || 14}px`;
+      oppPrev.style.borderColor = oppStroke;
     }
     if (mePrev) {
-      mePrev.style.backgroundColor = s.bubbles.me.bgColor;
-      mePrev.style.color = s.bubbles.me.textColor;
-      mePrev.style.fontSize = `${s.bubbles.me.fontSize}px`;
-      mePrev.style.borderColor = s.bubbles.me.strokeColor;
+      mePrev.style.backgroundColor = meBg;
+      mePrev.style.color = meText;
+      mePrev.style.fontSize = `${parseInt(meSize) || 14}px`;
+      mePrev.style.borderColor = meStroke;
     }
   }
 
@@ -382,6 +443,51 @@
   function onClick(id, fn) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', fn);
+  }
+
+  function showConfirmModal(title, message, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'dict-modal show';
+    overlay.innerHTML = `
+      <div class="dict-modal-content">
+        <div class="dict-modal-title">${escapeHtml(title)}</div>
+        <div style="font-size:13px; color:#2e1f19; line-height:1.4;">${escapeHtml(message)}</div>
+        <div class="dict-modal-footer">
+          <button class="cute-btn" id="modal-cancel" style="background:#e0ede5;">取消</button>
+          <button class="cute-btn danger" id="modal-ok">确认</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+    overlay.querySelector('#modal-ok').onclick = () => {
+      overlay.remove();
+      onConfirm();
+    };
+  }
+
+  function alertModal(msg) {
+    const overlay = document.createElement('div');
+    overlay.className = 'dict-modal show';
+    overlay.innerHTML = `
+      <div class="dict-modal-content">
+        <div class="dict-modal-title">提示</div>
+        <div style="font-size:13px; color:#2e1f19;">${escapeHtml(msg)}</div>
+        <div class="dict-modal-footer">
+          <button class="cute-btn" id="modal-ok">知道了</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#modal-ok').onclick = () => overlay.remove();
+  }
+
+  function escapeHtml(str) {
+    return (str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
 })(window);
