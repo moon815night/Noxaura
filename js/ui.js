@@ -289,7 +289,10 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, 
   img.className = 'bubble-image-img';
   img.src = imgSrc;
   img.onload = () => { scrollToBottom(chatContent); };
-  img.addEventListener('click', () => {
+  img.addEventListener('click', (e) => {
+    if (window.isLongPressing) return;
+    const ctxOverlay = document.getElementById('context-menu-overlay');
+    if (ctxOverlay && ctxOverlay.classList.contains('show')) return;
     const imageOverlay = document.getElementById('image-overlay');
     const imageOverlayImg = document.getElementById('image-overlay-img');
     if (imageOverlay && imageOverlayImg) {
@@ -298,8 +301,8 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, 
     }
   });
 
-  bubble.appendChild(img);
   renderQuoteAndAnnotation(bubble, wrapper, { id: msgId, quote: quoteData, annotation: annotationText });
+  bubble.appendChild(img);
   wrapper.appendChild(bubble);
 
   const timeEl = document.createElement('div');
@@ -337,8 +340,8 @@ function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null
   img.src = imgSrc;
   img.onload = () => { scrollToBottom(chatContent); };
 
-  bubble.appendChild(img);
   renderQuoteAndAnnotation(bubble, wrapper, { id: msgId, quote: quoteData, annotation: annotationText });
+  bubble.appendChild(img);
   wrapper.appendChild(bubble);
 
   const timeEl = document.createElement('div');

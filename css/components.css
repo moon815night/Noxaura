@@ -293,16 +293,38 @@
   stroke-linejoin: round;
 }
 
-/* 照片消息 */
-.bubble-wrapper.image-wrapper .bubble-svg {
+/* 照片消息与表情消息 */
+.bubble-wrapper.image-wrapper .bubble-svg,
+.bubble-wrapper.sticker-wrapper .bubble-svg {
   display: none;
 }
 
-.bubble.bubble-image {
+.bubble.bubble-image,
+.bubble.bubble-sticker {
   background: transparent !important;
   padding: 0 !important;
   border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bubble-image .bubble-quote,
+.bubble-sticker .bubble-quote {
+  margin: 4px 4px 2px 4px;
+  background: rgba(238, 248, 240, 0.95);
+  border-left: 3px solid #775c55;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.bubble-image .bubble-annotation,
+.bubble-sticker .bubble-annotation {
+  margin: 2px 4px 4px 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.2px solid #775c55;
+  border-radius: 8px;
+  padding: 4px 8px;
 }
 
 .bubble-image-img {
@@ -574,8 +596,9 @@
 }
 
 .feature-btn svg {
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
+  overflow: visible;
 }
 
 .feature-btn:active {

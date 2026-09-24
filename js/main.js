@@ -40,6 +40,7 @@
     let currentEditMsgId = null; // 二次编辑消息 ID
     let activeLongPressMsgId = null;
     let isMultiSelectMode = false;
+    window.isLongPressing = false;
 
     // 载入本地存储的历史聊天记录与系统样式
     loadChatHistoryUI();
@@ -132,13 +133,16 @@
           replies = [{ type: 'text', val: '嗯。' }];
         }
 
-        // 10% 概率引用用户之前的消息
+        // 10% 概率引用用户以前的所有历史消息（包括文本、图片、表情）
         let replyQuote = null;
         if (Math.random() < 0.1 && window.ChatState) {
-          const userMsgs = window.ChatState.getHistory().filter(m => m.isMe && (m.text || m.type === 'image' || m.type === 'sticker'));
+          const userMsgs = window.ChatState.getHistory().filter(m => m.isMe);
           if (userMsgs.length > 0) {
             const targetMsg = userMsgs[Math.floor(Math.random() * userMsgs.length)];
-            const qText = targetMsg.type === 'image' ? '[图片]' : (targetMsg.type === 'sticker' ? '[表情]' : targetMsg.text);
+            let qText = '[消息]';
+            if (targetMsg.type === 'image') qText = '[图片]';
+            else if (targetMsg.type === 'sticker') qText = '[表情]';
+            else if (targetMsg.text) qText = targetMsg.text;
             replyQuote = { id: targetMsg.id, text: qText };
           }
         }
@@ -219,6 +223,7 @@
     let pressTimer = null;
 
     function showContextMenu(x, y, msgId) {
+      window.isLongPressing = true;
       activeLongPressMsgId = msgId;
       const history = window.ChatState.getHistory();
       const msg = history.find(m => m.id === msgId);
@@ -241,6 +246,7 @@
 
     function hideContextMenu() {
       ctxMenuOverlay.classList.remove('show');
+      setTimeout(() => { window.isLongPressing = false; }, 200);
     }
 
     ctxMenuOverlay.addEventListener('click', hideContextMenu);
