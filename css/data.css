@@ -1,0 +1,211 @@
+/* ==================== 数据管理 子页面样式 ==================== */
+.data-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  box-sizing: border-box;
+}
+
+.data-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.data-panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 85vh;
+  max-height: 720px;
+  background: rgba(244, 251, 246, 0.96);
+  border: 1.5px solid var(--color-stroke-bubble);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 14px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(46, 31, 25, 0.15);
+  transform: scale(0.95);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.data-overlay.show .data-panel {
+  transform: scale(1);
+}
+
+.data-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(119, 92, 85, 0.35);
+  flex-shrink: 0;
+}
+
+.data-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-stroke-bubble);
+}
+
+.btn-data-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-data-back {
+  width: 36px;
+  height: 36px;
+  border: 1.2px solid var(--color-stroke-bubble);
+  border-radius: 10px;
+  background: var(--color-primary-green);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.btn-data-back:active {
+  transform: scale(0.93);
+  background-color: var(--color-accent-green);
+}
+
+.data-toolbar {
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+.data-body {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.data-body::-webkit-scrollbar-thumb {
+  background: rgba(119, 92, 85, 0.3);
+  border-radius: 4px;
+}
+
+/* 折叠手绘卡片组件 */
+.data-fold-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1.2px solid rgba(119, 92, 85, 0.3);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.data-fold-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(230, 244, 235, 0.65);
+  cursor: pointer;
+  user-select: none;
+}
+
+.data-fold-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.data-fold-icon {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.data-fold-card.collapsed .data-fold-icon {
+  transform: rotate(-90deg);
+}
+
+.data-fold-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.data-fold-card.collapsed .data-fold-body {
+  display: none;
+}
+
+.data-desc-text {
+  font-size: 12px;
+  color: #775c55;
+  line-height: 1.45;
+}
+
+/* 日期范围选择器 */
+.date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.date-input-field {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1.2px solid var(--color-input-border);
+  border-radius: 8px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--color-text-main);
+  outline: none;
+  font-family: inherit;
+}
+
+.data-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

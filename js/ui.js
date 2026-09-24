@@ -79,8 +79,9 @@ function formatMsgTime(dateObj) {
 /**
  * 生成并添加一条文本消息到界面
  */
-function appendMessage(chatContent, text, isMe = true, timestamp = null) {
-  const dateObj = timestamp ? new Date(timestamp) : new Date();
+function appendMessage(chatContent, text, isMe = true, timestamp = null, saveToHistory = true) {
+  const ts = timestamp || Date.now();
+  const dateObj = new Date(ts);
   checkAndAppendDateDivider(chatContent, dateObj);
 
   const row = document.createElement('div');
@@ -122,13 +123,18 @@ function appendMessage(chatContent, text, isMe = true, timestamp = null) {
   scrollToBottom(chatContent);
 
   setTimeout(() => { updateBubbleSVG(wrapper); }, 0);
+
+  if (saveToHistory && window.ChatState) {
+    window.ChatState.addMessage({ type: 'text', text, isMe, timestamp: ts });
+  }
 }
 
 /**
  * 生成并添加一条图片消息到界面（相册照片）
  */
-function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null) {
-  const dateObj = timestamp ? new Date(timestamp) : new Date();
+function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true) {
+  const ts = timestamp || Date.now();
+  const dateObj = new Date(ts);
   checkAndAppendDateDivider(chatContent, dateObj);
 
   const row = document.createElement('div');
@@ -174,13 +180,18 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null) 
 
   chatContent.appendChild(row);
   scrollToBottom(chatContent);
+
+  if (saveToHistory && window.ChatState) {
+    window.ChatState.addMessage({ type: 'image', src: imgSrc, isMe, timestamp: ts });
+  }
 }
 
 /**
  * 生成并添加一条表情包消息到界面（无气泡、无描边）
  */
-function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null) {
-  const dateObj = timestamp ? new Date(timestamp) : new Date();
+function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true) {
+  const ts = timestamp || Date.now();
+  const dateObj = new Date(ts);
   checkAndAppendDateDivider(chatContent, dateObj);
 
   const row = document.createElement('div');
@@ -218,4 +229,41 @@ function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null
 
   chatContent.appendChild(row);
   scrollToBottom(chatContent);
+
+  if (saveToHistory && window.ChatState) {
+    window.ChatState.addMessage({ type: 'sticker', src: imgSrc, isMe, timestamp: ts });
+  }
+}
+
+/**
+ * 页面初始化时加载历史聊天记录
+ */
+function loadChatHistoryUI() {
+  const chatContent = document.getElementById('chat-content');
+  if (!chatContent || !window.ChatState) return;
+
+  chatContent.innerHTML = '';
+  lastDisplayedDateKey = null;
+
+  const history = window.ChatState.getHistory();
+  history.forEach((msg) => {
+    if (msg.type === 'image') {
+      appendImageMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false);
+    } else if (msg.type === 'sticker') {
+      appendStickerMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false);
+    } else {
+      appendMessage(chatContent, msg.text, msg.isMe, msg.timestamp, false);
+    }
+  });
+}
+
+/**
+ * 清空聊天主区 UI DOM
+ */
+function clearChatDisplay() {
+  const chatContent = document.getElementById('chat-content');
+  if (chatContent) {
+    chatContent.innerHTML = '';
+  }
+  lastDisplayedDateKey = null;
 }

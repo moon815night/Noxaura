@@ -20,6 +20,9 @@
     const albumFileInput = document.getElementById('album-file-input');
     const imageOverlay = document.getElementById('image-overlay');
 
+    // 载入本地存储的历史聊天记录
+    loadChatHistoryUI();
+
     // 连发模式标记
     let isContinuousMode = false;
 

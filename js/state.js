@@ -1,11 +1,12 @@
 /**
- * 词库数据与状态管理模块
+ * 词库数据、表情包与聊天记录状态管理模块
  */
 (function (global) {
   'use strict';
 
   const STORAGE_KEY = 'night_glow_dict_groups';
   const STICKER_KEY = 'night_glow_stickers';
+  const CHAT_KEY = 'night_glow_chat_history';
 
   function loadData(key) {
     try {
@@ -32,9 +33,11 @@
     lastColor: '#775c55',
     colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
   };
+  let chatHistory = loadData(CHAT_KEY) || [];
 
   global.DictState = {
     getGroups() { return groups; },
+    setGroups(newGroups) { groups = newGroups; saveData(STORAGE_KEY, groups); },
     addGroup(name) {
       const cleanName = (name || '').trim();
       if (!cleanName) return null;
@@ -88,6 +91,7 @@
 
   global.StickerState = {
     getData() { return stickerState; },
+    setData(newData) { stickerState = newData; saveData(STICKER_KEY, stickerState); },
     save() { saveData(STICKER_KEY, stickerState); },
     addMyStickers(srcs) {
       srcs.forEach(src => {
@@ -147,6 +151,63 @@
       const res = [];
       for (let i = 0; i < count; i++) res.push(pool[Math.floor(Math.random() * pool.length)]);
       return res;
+    }
+  };
+
+  global.ChatState = {
+    getHistory() { return chatHistory; },
+    addMessage(msg) {
+      chatHistory.push(msg);
+      saveData(CHAT_KEY, chatHistory);
+    },
+    clearHistory() {
+      chatHistory = [];
+      saveData(CHAT_KEY, chatHistory);
+    },
+    setHistory(newHistory) {
+      chatHistory = newHistory || [];
+      saveData(CHAT_KEY, chatHistory);
+    }
+  };
+
+  global.DataState = {
+    exportAllJSON() {
+      const allData = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        dictGroups: groups,
+        stickers: stickerState,
+        chatHistory: chatHistory
+      };
+      return JSON.stringify(allData, null, 2);
+    },
+    importAllJSON(jsonString) {
+      try {
+        const parsed = JSON.parse(jsonString);
+        if (parsed.dictGroups && Array.isArray(parsed.dictGroups)) {
+          global.DictState.setGroups(parsed.dictGroups);
+        }
+        if (parsed.stickers) {
+          global.StickerState.setData(parsed.stickers);
+        }
+        if (parsed.chatHistory && Array.isArray(parsed.chatHistory)) {
+          global.ChatState.setHistory(parsed.chatHistory);
+        }
+        return true;
+      } catch (e) {
+        console.error('导入 JSON 失败', e);
+        return false;
+      }
+    },
+    clearAllData() {
+      global.DictState.deleteAllGroups();
+      global.StickerState.setData({
+        myStickers: [],
+        groups: [],
+        lastColor: '#775c55',
+        colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
+      });
+      global.ChatState.clearHistory();
     }
   };
 
