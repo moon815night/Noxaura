@@ -4,6 +4,14 @@
 (function (global) {
   'use strict';
 
+  function getLocalDate() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const btnOpenData = document.getElementById('btn-open-data');
     const dataOverlay = document.getElementById('data-overlay');
@@ -66,9 +74,9 @@
       }
     });
 
-    // 初始化日历导出时间选择框默认值为今天
+    // 初始化日历导出时间选择框默认值为今天（精准使用本地时区年月日）
     function initDefaultDates() {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDate();
       if (exportStartDate && !exportStartDate.value) exportStartDate.value = today;
       if (exportEndDate && !exportEndDate.value) exportEndDate.value = today;
     }

@@ -209,3 +209,35 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+
+/* 增强可爱手绘风按钮支持 */
+.data-panel .cute-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1.2px solid var(--color-stroke-bubble);
+  background: #eef8f0;
+  color: #2e1f19;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.data-panel .cute-btn:active {
+  transform: scale(0.95);
+  background: #d9f0e1;
+}
+
+.data-panel .cute-btn.danger {
+  background: #ffe9e9;
+  border: 1.2px solid var(--color-stroke-bubble);
+  color: #2e1f19;
+}
+
+.data-panel .cute-btn.danger:active {
+  background: #f7d2d2;
+}
