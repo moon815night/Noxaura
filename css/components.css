@@ -11,6 +11,7 @@
   flex-shrink: 0;
   z-index: 10;
   user-select: none;
+  border-bottom: 1px solid rgba(119, 92, 85, 0.25);
 }
 
 .top-left {
@@ -249,6 +250,7 @@
   gap: 6px;
   flex-shrink: 0;
   transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: 1px solid rgba(119, 92, 85, 0.25);
 }
 
 .bottom-bar.feature-open {

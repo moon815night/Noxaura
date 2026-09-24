@@ -178,9 +178,6 @@
     }
 
     function exportChatToHTML(messages, startVal, endVal) {
-      const nowStr = formatDateReadable(new Date());
-      const msgCount = messages.length;
-
       let chatItemsHtml = '';
       let currentDateKey = null;
 
@@ -252,17 +249,65 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: radial-gradient(circle at center, var(--bg-gradient-center) 0%, var(--bg-gradient-26) 26%, var(--bg-gradient-54) 54%, var(--bg-gradient-80) 80%, var(--bg-gradient-100) 100%);
+      background-color: #faf7f2;
       font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
       color: var(--color-text-main);
-      padding: 20px 10px;
+      padding: 30px 12px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
     }
+    
+    /* 聊天框外部标头区域 */
+    .export-outer-header {
+      width: 100%;
+      max-width: 650px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .export-main-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-text-main);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .export-meta-row {
+      font-size: 13px;
+      color: var(--color-stroke-bubble);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    /* 聊天框外部加粗双分割线 */
+    .export-divider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .divider-solid {
+      height: 2px;
+      background-color: rgba(119, 92, 85, 0.5);
+    }
+    .divider-dashed {
+      height: 2px;
+      background-image: linear-gradient(to right, rgba(119, 92, 85, 0.5) 6px, transparent 4px);
+      background-size: 10px 2px;
+      background-repeat: repeat-x;
+    }
+
+    /* 聊天框主体（与聊天页面背景完全同步） */
     .export-container {
       width: 100%;
       max-width: 650px;
-      background: rgba(244, 251, 246, 0.95);
+      background: radial-gradient(
+        circle at center,
+        var(--bg-gradient-center) 0%,
+        var(--bg-gradient-26) 26%,
+        var(--bg-gradient-54) 54%,
+        var(--bg-gradient-80) 80%,
+        var(--bg-gradient-100) 100%
+      );
       border: 1.5px solid var(--color-stroke-bubble);
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(46, 31, 25, 0.12);
@@ -273,46 +318,10 @@
       padding: 14px 18px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(119, 92, 85, 0.15);
+      justify-content: flex-start;
+      border-bottom: 1px solid rgba(119, 92, 85, 0.25);
     }
     .contact-name { font-size: 18px; font-weight: 700; color: var(--color-text-main); }
-    .status-text { font-size: 12px; color: #775c55; }
-    
-    /* 导出专用固定标头 Header */
-    .export-fixed-header {
-      padding: 16px 18px 12px 18px;
-      background: rgba(220, 250, 226, 0.45);
-      text-align: center;
-    }
-    .export-main-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--color-text-main);
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-    .export-meta-row {
-      font-size: 12px;
-      color: var(--color-stroke-bubble);
-      line-height: 1.5;
-      font-weight: 500;
-    }
-    
-    /* 实线+虚线组合分割线 */
-    .export-divider-group {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .divider-solid { height: 1px; background-color: rgba(119, 92, 85, 0.4); }
-    .divider-dashed {
-      height: 1px;
-      background-image: linear-gradient(to right, rgba(119, 92, 85, 0.4) 4px, transparent 2px, rgba(119, 92, 85, 0.4) 1px, transparent 2px);
-      background-size: 9px 1px;
-      background-repeat: repeat-x;
-    }
     
     .chat-content { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .chat-date-divider { display: flex; align-items: center; justify-content: center; margin: 12px 0 6px 0; width: 100%; }
@@ -349,19 +358,17 @@
   </style>
 </head>
 <body>
+  <div class="export-outer-header">
+    <div class="export-main-title">一千零一夜</div>
+    <div class="export-meta-row">记录日期：${startVal} 至 ${endVal}</div>
+    <div class="export-divider-group">
+      <div class="divider-solid"></div>
+      <div class="divider-dashed"></div>
+    </div>
+  </div>
   <div class="export-container">
     <div class="top-bar">
       <div class="contact-name">顾时夜</div>
-      <div class="status-text">在线</div>
-    </div>
-    <div class="export-fixed-header">
-      <div class="export-main-title">一千零一夜</div>
-      <div class="export-meta-row">导出时间：${nowStr}</div>
-      <div class="export-meta-row">记录日期：${startVal} 至 ${endVal} &nbsp;|&nbsp; 共计 ${msgCount} 条消息</div>
-      <div class="export-divider-group">
-        <div class="divider-solid"></div>
-        <div class="divider-dashed"></div>
-      </div>
     </div>
     <div class="chat-content">
       ${chatItemsHtml}
