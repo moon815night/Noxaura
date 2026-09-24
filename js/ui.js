@@ -61,17 +61,70 @@ function formatMsgTime(dateObj) {
 }
 
 /**
+ * 自动滚动至原话并高亮 2 秒
+ */
+function highlightOriginalMessage(msgId) {
+  if (!msgId) return;
+  const targetRow = document.querySelector(`.msg-row[data-msg-id="${msgId}"]`);
+  if (!targetRow) return;
+
+  targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  targetRow.classList.add('highlight-flash');
+  setTimeout(() => {
+    targetRow.classList.remove('highlight-flash');
+  }, 2000);
+}
+
+/**
+ * 挂载引用块与注释块 DOM 结构
+ */
+function renderQuoteAndAnnotation(bubble, wrapper, msgData) {
+  // 引用块
+  if (msgData.quote && msgData.quote.text) {
+    const qEl = document.createElement('div');
+    qEl.className = 'bubble-quote collapsed';
+    qEl.textContent = `引用: ${msgData.quote.text}`;
+    qEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      qEl.classList.toggle('collapsed');
+      updateBubbleSVG(wrapper);
+      if (msgData.quote.id) {
+        highlightOriginalMessage(msgData.quote.id);
+      }
+    });
+    bubble.insertBefore(qEl, bubble.firstChild);
+  }
+
+  // 注释块
+  if (msgData.annotation) {
+    let aEl = bubble.querySelector('.bubble-annotation');
+    if (!aEl) {
+      aEl = document.createElement('div');
+      aEl.className = 'bubble-annotation collapsed';
+      bubble.appendChild(aEl);
+    }
+    aEl.textContent = `注释: ${msgData.annotation}`;
+    aEl.onclick = (e) => {
+      e.stopPropagation();
+      aEl.classList.toggle('collapsed');
+      updateBubbleSVG(wrapper);
+    };
+  } else {
+    const existing = bubble.querySelector('.bubble-annotation');
+    if (existing) existing.remove();
+  }
+}
+
+/**
  * 动态应用系统美化与定制样式到页面 DOM
  */
 function applySystemStyles() {
   if (!window.SystemState) return;
   const s = window.SystemState.getSettings();
 
-  // 1. 联系人昵称挂载
   const nameEl = document.getElementById('display-contact-name');
   if (nameEl) nameEl.textContent = s.nicknames.opponent || '顾时夜';
 
-  // 2. 动态 CSS 节点
   let styleEl = document.getElementById('dynamic-system-styles');
   if (!styleEl) {
     styleEl = document.createElement('style');
@@ -79,7 +132,6 @@ function applySystemStyles() {
     document.head.appendChild(styleEl);
   }
 
-  // 字体导入支持
   let fontFaceCss = '';
   if (s.fonts && s.fonts.fontCustom) {
     fontFaceCss = `@font-face { font-family: 'CustomLoveFont'; src: url('${s.fonts.fontCustom}'); } * { font-family: 'CustomLoveFont', -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif !important; }`;
@@ -141,13 +193,20 @@ function applySystemStyles() {
   refreshAllBubbles();
 }
 
-function appendMessage(chatContent, text, isMe = true, timestamp = null, saveToHistory = true) {
+function createMsgRowBase(isMe, timestamp, msgId) {
   const ts = timestamp || Date.now();
   const dateObj = new Date(ts);
+  const chatContent = document.getElementById('chat-content');
   checkAndAppendDateDivider(chatContent, dateObj);
 
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+  row.setAttribute('data-msg-id', msgId);
+
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'dict-checkbox msg-select-checkbox';
+  row.appendChild(checkbox);
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
@@ -155,12 +214,26 @@ function appendMessage(chatContent, text, isMe = true, timestamp = null, saveToH
   const col = document.createElement('div');
   col.className = 'msg-column';
 
+  return { row, avatar, col, dateObj, chatContent };
+}
+
+function appendMessage(chatContent, text, isMe = true, timestamp = null, saveToHistory = true, quoteData = null, annotationText = null, existingMsgId = null) {
+  const msgId = existingMsgId || ('m_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+  const { row, avatar, col, dateObj } = createMsgRowBase(isMe, timestamp, msgId);
+
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.textContent = text;
+  
+  const textNode = document.createElement('span');
+  textNode.className = 'bubble-text-node';
+  textNode.textContent = text;
+  bubble.appendChild(textNode);
+
+  const msgData = { id: msgId, text, isMe, timestamp: timestamp || Date.now(), quote: quoteData, annotation: annotationText };
+  renderQuoteAndAnnotation(bubble, wrapper, msgData);
 
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'bubble-svg');
@@ -187,23 +260,24 @@ function appendMessage(chatContent, text, isMe = true, timestamp = null, saveToH
   setTimeout(() => { updateBubbleSVG(wrapper); }, 0);
 
   if (saveToHistory && window.ChatState) {
-    window.ChatState.addMessage({ type: 'text', text, isMe, timestamp: ts });
+    window.ChatState.addMessage({ id: msgId, type: 'text', text, isMe, timestamp: Date.now(), quote: quoteData, annotation: annotationText });
   }
+
+  return msgId;
 }
 
-function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true) {
-  const ts = timestamp || Date.now();
-  const dateObj = new Date(ts);
-  checkAndAppendDateDivider(chatContent, dateObj);
+function updateMessageInDOM(msgId, newText) {
+  const row = document.querySelector(`.msg-row[data-msg-id="${msgId}"]`);
+  if (!row) return;
+  const textNode = row.querySelector('.bubble-text-node');
+  if (textNode) textNode.textContent = newText;
+  const wrapper = row.querySelector('.bubble-wrapper');
+  if (wrapper) updateBubbleSVG(wrapper);
+}
 
-  const row = document.createElement('div');
-  row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
-
-  const avatar = document.createElement('div');
-  avatar.className = 'avatar';
-
-  const col = document.createElement('div');
-  col.className = 'msg-column';
+function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true, quoteData = null, annotationText = null, existingMsgId = null) {
+  const msgId = existingMsgId || ('m_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+  const { row, avatar, col, dateObj } = createMsgRowBase(isMe, timestamp, msgId);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper image-wrapper';
@@ -225,6 +299,7 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, 
   });
 
   bubble.appendChild(img);
+  renderQuoteAndAnnotation(bubble, wrapper, { id: msgId, quote: quoteData, annotation: annotationText });
   wrapper.appendChild(bubble);
 
   const timeEl = document.createElement('div');
@@ -241,23 +316,15 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, 
   scrollToBottom(chatContent);
 
   if (saveToHistory && window.ChatState) {
-    window.ChatState.addMessage({ type: 'image', src: imgSrc, isMe, timestamp: ts });
+    window.ChatState.addMessage({ id: msgId, type: 'image', src: imgSrc, isMe, timestamp: Date.now(), quote: quoteData, annotation: annotationText });
   }
+
+  return msgId;
 }
 
-function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true) {
-  const ts = timestamp || Date.now();
-  const dateObj = new Date(ts);
-  checkAndAppendDateDivider(chatContent, dateObj);
-
-  const row = document.createElement('div');
-  row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
-
-  const avatar = document.createElement('div');
-  avatar.className = 'avatar';
-
-  const col = document.createElement('div');
-  col.className = 'msg-column';
+function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true, quoteData = null, annotationText = null, existingMsgId = null) {
+  const msgId = existingMsgId || ('m_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+  const { row, avatar, col, dateObj } = createMsgRowBase(isMe, timestamp, msgId);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper sticker-wrapper';
@@ -271,6 +338,7 @@ function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null
   img.onload = () => { scrollToBottom(chatContent); };
 
   bubble.appendChild(img);
+  renderQuoteAndAnnotation(bubble, wrapper, { id: msgId, quote: quoteData, annotation: annotationText });
   wrapper.appendChild(bubble);
 
   const timeEl = document.createElement('div');
@@ -287,8 +355,10 @@ function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null
   scrollToBottom(chatContent);
 
   if (saveToHistory && window.ChatState) {
-    window.ChatState.addMessage({ type: 'sticker', src: imgSrc, isMe, timestamp: ts });
+    window.ChatState.addMessage({ id: msgId, type: 'sticker', src: imgSrc, isMe, timestamp: Date.now(), quote: quoteData, annotation: annotationText });
   }
+
+  return msgId;
 }
 
 function loadChatHistoryUI() {
@@ -301,11 +371,11 @@ function loadChatHistoryUI() {
   const history = window.ChatState.getHistory();
   history.forEach((msg) => {
     if (msg.type === 'image') {
-      appendImageMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false);
+      appendImageMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
     } else if (msg.type === 'sticker') {
-      appendStickerMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false);
+      appendStickerMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
     } else {
-      appendMessage(chatContent, msg.text, msg.isMe, msg.timestamp, false);
+      appendMessage(chatContent, msg.text, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
     }
   });
 

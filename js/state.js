@@ -221,7 +221,27 @@
   global.ChatState = {
     getHistory() { return chatHistory; },
     addMessage(msg) {
+      if (!msg.id) msg.id = 'm_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
       chatHistory.push(msg);
+      saveData(CHAT_KEY, chatHistory);
+      return msg.id;
+    },
+    updateMessage(id, partial) {
+      const msg = chatHistory.find(m => m.id === id);
+      if (msg) {
+        Object.assign(msg, partial);
+        saveData(CHAT_KEY, chatHistory);
+        return true;
+      }
+      return false;
+    },
+    deleteMessage(id) {
+      chatHistory = chatHistory.filter(m => m.id !== id);
+      saveData(CHAT_KEY, chatHistory);
+    },
+    deleteMessages(ids) {
+      const set = new Set(ids);
+      chatHistory = chatHistory.filter(m => !set.has(m.id));
       saveData(CHAT_KEY, chatHistory);
     },
     clearHistory() {

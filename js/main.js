@@ -20,6 +20,27 @@
     const albumFileInput = document.getElementById('album-file-input');
     const imageOverlay = document.getElementById('image-overlay');
 
+    // 引用、编辑与长按菜单相关 DOM
+    const quotePreviewBar = document.getElementById('quote-preview-bar');
+    const quotePreviewText = document.getElementById('quote-preview-text');
+    const btnCancelQuote = document.getElementById('btn-cancel-quote');
+    const ctxMenuOverlay = document.getElementById('context-menu-overlay');
+    const ctxMenu = document.getElementById('context-menu');
+    const ctxBtnQuote = document.getElementById('ctx-btn-quote');
+    const ctxBtnAnnotate = document.getElementById('ctx-btn-annotate');
+    const ctxBtnEdit = document.getElementById('ctx-btn-edit');
+    const ctxBtnDelete = document.getElementById('ctx-btn-delete');
+    
+    const multiSelectBar = document.getElementById('multi-select-bar');
+    const btnCancelMultiSelect = document.getElementById('btn-cancel-multi-select');
+    const btnDeleteSelectedMsgs = document.getElementById('btn-delete-selected-msgs');
+    const multiSelectCount = document.getElementById('multi-select-count');
+
+    let currentQuoteData = null; // { id, text }
+    let currentEditMsgId = null; // 二次编辑消息 ID
+    let activeLongPressMsgId = null;
+    let isMultiSelectMode = false;
+
     // 载入本地存储的历史聊天记录与系统样式
     loadChatHistoryUI();
 
@@ -46,11 +67,26 @@
     });
 
     function updateSendBtnState() {
-      if (isContinuousMode || chatInput.value.trim().length > 0) {
+      if (isContinuousMode || chatInput.value.trim().length > 0 || currentEditMsgId) {
         btnSend.classList.add('active');
       } else {
         btnSend.classList.remove('active');
       }
+    }
+
+    function setQuotePreview(msgId, text) {
+      currentQuoteData = { id: msgId, text };
+      quotePreviewText.textContent = `引用: ${text}`;
+      quotePreviewBar.classList.add('show');
+    }
+
+    function clearQuotePreview() {
+      currentQuoteData = null;
+      quotePreviewBar.classList.remove('show');
+    }
+
+    if (btnCancelQuote) {
+      btnCancelQuote.addEventListener('click', clearQuotePreview);
     }
 
     if (btnBubbles) {
@@ -73,7 +109,7 @@
 
     chatInput.addEventListener('input', updateSendBtnState);
 
-    // 触发对方回复逻辑（读取系统回复策略参数）
+    // 触发对方回复逻辑（读取系统回复策略参数，含 10% 概率引用用户消息）
     function triggerOpponentReply() {
       const st = window.SystemState ? window.SystemState.getSettings().replyStrategy : { minDelay: 2, maxDelay: 5, replyCountMin: 1, replyCountMax: 3 };
       const minMs = (st.minDelay || 2) * 1000;
@@ -92,12 +128,24 @@
           replies = [{ type: 'text', val: '嗯。' }];
         }
 
+        // 10% 概率引用用户之前的消息
+        let replyQuote = null;
+        if (Math.random() < 0.1 && window.ChatState) {
+          const userMsgs = window.ChatState.getHistory().filter(m => m.isMe && (m.text || m.type === 'image' || m.type === 'sticker'));
+          if (userMsgs.length > 0) {
+            const targetMsg = userMsgs[Math.floor(Math.random() * userMsgs.length)];
+            const qText = targetMsg.type === 'image' ? '[图片]' : (targetMsg.type === 'sticker' ? '[表情]' : targetMsg.text);
+            replyQuote = { id: targetMsg.id, text: qText };
+          }
+        }
+
         replies.forEach((item, index) => {
           setTimeout(() => {
+            const qData = (index === 0) ? replyQuote : null;
             if (item.type === 'sticker') {
-              appendStickerMessage(chatContent, item.val, false);
+              appendStickerMessage(chatContent, item.val, false, null, true, qData);
             } else {
-              appendMessage(chatContent, item.val, false);
+              appendMessage(chatContent, item.val, false, null, true, qData);
             }
           }, index * 900);
         });
@@ -125,7 +173,18 @@
     function handleSendText() {
       const text = chatInput.value.trim();
       if (!text) return false;
-      appendMessage(chatContent, text, true);
+
+      // 如果处于二次编辑状态，原地修改该消息
+      if (currentEditMsgId) {
+        window.ChatState.updateMessage(currentEditMsgId, { text });
+        updateMessageInDOM(currentEditMsgId, text);
+        currentEditMsgId = null;
+        chatInput.value = '';
+        return true;
+      }
+
+      appendMessage(chatContent, text, true, null, true, currentQuoteData);
+      clearQuotePreview();
       chatInput.value = '';
       return true;
     }
@@ -133,7 +192,7 @@
     chatInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const sent = handleSendText();
-        if (sent && !isContinuousMode) {
+        if (sent && !isContinuousMode && !currentEditMsgId) {
           updateSendBtnState();
           triggerOpponentReply();
         }
@@ -153,6 +212,211 @@
       }
     });
 
+    // ==================== 长按手势与右键菜单 ====================
+    let pressTimer = null;
+
+    function showContextMenu(x, y, msgId) {
+      activeLongPressMsgId = msgId;
+      const history = window.ChatState.getHistory();
+      const msg = history.find(m => m.id === msgId);
+      if (!msg) return;
+
+      // 如果是用户的消息，显示编辑按钮
+      if (msg.isMe && msg.type === 'text') {
+        ctxBtnEdit.style.display = 'block';
+      } else {
+        ctxBtnEdit.style.display = 'none';
+      }
+
+      ctxMenu.style.left = `${Math.min(x, window.innerWidth - 180)}px`;
+      ctxMenu.style.top = `${Math.max(y - 10, 60)}px`;
+      ctxMenuOverlay.classList.add('show');
+    }
+
+    function hideContextMenu() {
+      ctxMenuOverlay.classList.remove('show');
+    }
+
+    ctxMenuOverlay.addEventListener('click', hideContextMenu);
+
+    chatContent.addEventListener('touchstart', (e) => {
+      const row = e.target.closest('.msg-row');
+      if (!row) return;
+      const msgId = row.getAttribute('data-msg-id');
+      if (!msgId) return;
+
+      pressTimer = setTimeout(() => {
+        const touch = e.touches[0];
+        showContextMenu(touch.clientX, touch.clientY, msgId);
+      }, 500);
+    });
+
+    chatContent.addEventListener('touchend', () => clearTimeout(pressTimer));
+    chatContent.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+    chatContent.addEventListener('contextmenu', (e) => {
+      const row = e.target.closest('.msg-row');
+      if (!row) return;
+      e.preventDefault();
+      const msgId = row.getAttribute('data-msg-id');
+      if (msgId) showContextMenu(e.clientX, e.clientY, msgId);
+    });
+
+    // 菜单按钮 1：引用
+    ctxBtnQuote.addEventListener('click', () => {
+      hideContextMenu();
+      const history = window.ChatState.getHistory();
+      const msg = history.find(m => m.id === activeLongPressMsgId);
+      if (!msg) return;
+      const qText = msg.type === 'image' ? '[图片]' : (msg.type === 'sticker' ? '[表情]' : msg.text);
+      setQuotePreview(msg.id, qText);
+    });
+
+    // 菜单按钮 2：注释
+    ctxBtnAnnotate.addEventListener('click', () => {
+      hideContextMenu();
+      const history = window.ChatState.getHistory();
+      const msg = history.find(m => m.id === activeLongPressMsgId);
+      if (!msg) return;
+
+      showAnnotateModal(msg.annotation || '', (newAnnot) => {
+        window.ChatState.updateMessage(msg.id, { annotation: newAnnot });
+        loadChatHistoryUI();
+      });
+    });
+
+    // 菜单按钮 3：编辑 (仅限用户消息)
+    ctxBtnEdit.addEventListener('click', () => {
+      hideContextMenu();
+      const history = window.ChatState.getHistory();
+      const msg = history.find(m => m.id === activeLongPressMsgId);
+      if (!msg || !msg.isMe) return;
+
+      currentEditMsgId = msg.id;
+      chatInput.value = msg.text || '';
+      chatInput.focus();
+      updateSendBtnState();
+    });
+
+    // 菜单按钮 4：删除 (支持直接删除与进入多选删除)
+    ctxBtnDelete.addEventListener('click', () => {
+      hideContextMenu();
+      showConfirmModal('删除消息', '请选择删除方式：', () => {
+        // 确认直接删除单条
+        window.ChatState.deleteMessage(activeLongPressMsgId);
+        loadChatHistoryUI();
+      }, () => {
+        // 进入多选删除模式
+        enterMultiSelectMode();
+      });
+    });
+
+    // 多选模式
+    function enterMultiSelectMode() {
+      isMultiSelectMode = true;
+      document.querySelector('.chat-app').classList.add('multi-select-mode');
+      multiSelectBar.classList.add('show');
+      updateMultiSelectCount();
+    }
+
+    function exitMultiSelectMode() {
+      isMultiSelectMode = false;
+      document.querySelector('.chat-app').classList.remove('multi-select-mode');
+      multiSelectBar.classList.remove('show');
+      document.querySelectorAll('.msg-select-checkbox').forEach(cb => cb.checked = false);
+    }
+
+    function updateMultiSelectCount() {
+      const selected = document.querySelectorAll('.msg-select-checkbox:checked').length;
+      multiSelectCount.textContent = `已选择 ${selected} 条消息`;
+    }
+
+    chatContent.addEventListener('change', (e) => {
+      if (e.target.classList.contains('msg-select-checkbox')) {
+        updateMultiSelectCount();
+      }
+    });
+
+    btnCancelMultiSelect.addEventListener('click', exitMultiSelectMode);
+    btnDeleteSelectedMsgs.addEventListener('click', () => {
+      const selectedBoxes = document.querySelectorAll('.msg-select-checkbox:checked');
+      if (selectedBoxes.length === 0) return;
+      const idsToDelete = [];
+      selectedBoxes.forEach(cb => {
+        const row = cb.closest('.msg-row');
+        if (row) idsToDelete.push(row.getAttribute('data-msg-id'));
+      });
+
+      showConfirmModal('确认删除', `确定要删除选中的 ${idsToDelete.length} 条消息吗？`, () => {
+        window.ChatState.deleteMessages(idsToDelete);
+        exitMultiSelectMode();
+        loadChatHistoryUI();
+      });
+    });
+
+    // 注释弹窗
+    function showAnnotateModal(defaultText, onSave) {
+      const overlay = document.createElement('div');
+      overlay.className = 'dict-modal show';
+      overlay.innerHTML = `
+        <div class="dict-modal-content">
+          <div class="dict-modal-title">编辑消息注释</div>
+          <textarea class="dict-modal-textarea" id="modal-annot-input" style="height:120px;" placeholder="在此输入对此句消息的专属注释...">${escapeHtml(defaultText)}</textarea>
+          <div class="dict-modal-footer">
+            <button class="cute-btn" id="modal-annot-cancel" style="background:#e0ede5;">取消</button>
+            <button class="cute-btn" id="modal-annot-save">保存</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      const input = overlay.querySelector('#modal-annot-input');
+      input.focus();
+
+      overlay.querySelector('#modal-annot-cancel').onclick = () => overlay.remove();
+      overlay.querySelector('#modal-annot-save').onclick = () => {
+        const val = input.value.trim();
+        overlay.remove();
+        onSave(val);
+      };
+    }
+
+    function showConfirmModal(title, message, onOk, onMultiSelect) {
+      const overlay = document.createElement('div');
+      overlay.className = 'dict-modal show';
+      let multiBtnHtml = onMultiSelect ? `<button class="cute-btn" id="modal-multi">多选删除</button>` : '';
+      overlay.innerHTML = `
+        <div class="dict-modal-content">
+          <div class="dict-modal-title">${escapeHtml(title)}</div>
+          <div style="font-size:13px; color:#2e1f19; line-height:1.4;">${escapeHtml(message)}</div>
+          <div class="dict-modal-footer">
+            <button class="cute-btn" id="modal-cancel" style="background:#e0ede5;">取消</button>
+            ${multiBtnHtml}
+            <button class="cute-btn danger" id="modal-ok">删除本条</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
+      overlay.querySelector('#modal-ok').onclick = () => {
+        overlay.remove();
+        if (onOk) onOk();
+      };
+      if (onMultiSelect) {
+        overlay.querySelector('#modal-multi').onclick = () => {
+          overlay.remove();
+          onMultiSelect();
+        };
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     // 相册逻辑
     if (btnAlbum && albumFileInput) {
       btnAlbum.addEventListener('click', () => { albumFileInput.click(); });
@@ -165,7 +429,8 @@
           reader.readAsDataURL(file);
         }));
         Promise.all(readPromises).then(imgSrcs => {
-          imgSrcs.filter(Boolean).forEach(src => appendImageMessage(chatContent, src, true));
+          imgSrcs.filter(Boolean).forEach(src => appendImageMessage(chatContent, src, true, null, true, currentQuoteData));
+          clearQuotePreview();
           triggerOpponentReply();
         });
         albumFileInput.value = '';

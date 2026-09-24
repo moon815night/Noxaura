@@ -79,6 +79,23 @@
   padding: 2px;
 }
 
+/* 多选删除顶部栏 */
+.multi-select-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-bar-bg);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(119, 92, 85, 0.25);
+  z-index: 15;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+.multi-select-bar.show {
+  display: flex;
+}
+
 /* ==================== 聊天区与消息气泡 ==================== */
 .chat-content {
   flex: 1;
@@ -118,10 +135,32 @@
   align-items: flex-start;
   gap: 8px;
   width: 100%;
+  position: relative;
+  user-select: none;
 }
 
 .msg-row.me {
   flex-direction: row-reverse;
+}
+
+/* 原话 2 秒高亮动画 */
+@keyframes msgHighlightFlash {
+  0%, 100% { background-color: transparent; }
+  20%, 80% { background-color: rgba(164, 222, 185, 0.5); }
+}
+.msg-row.highlight-flash .bubble-wrapper {
+  animation: msgHighlightFlash 2s ease-in-out;
+  border-radius: 12px;
+}
+
+/* 多选框 */
+.msg-select-checkbox {
+  display: none;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+.multi-select-mode .msg-select-checkbox {
+  display: block;
 }
 
 .msg-column {
@@ -172,6 +211,7 @@
   position: relative;
   width: fit-content;
   min-width: 40px;
+  max-width: 100%;
 }
 
 .bubble {
@@ -195,6 +235,44 @@
   border-bottom-right-radius: 2px;
 }
 
+/* 消息气泡内引用框 */
+.bubble-quote {
+  font-size: 11.5px;
+  color: #775c55;
+  background: rgba(119, 92, 85, 0.1);
+  border-left: 3px solid #775c55;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  word-break: break-all;
+}
+.bubble-quote.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 消息注释框：浅白背景，棕色边框 */
+.bubble-annotation {
+  font-size: 11.5px;
+  color: #2e1f19;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.2px solid #775c55;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 6px;
+  cursor: pointer;
+  word-break: break-all;
+}
+.bubble-annotation.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .bubble-svg {
   position: absolute;
   top: 0;
@@ -203,19 +281,19 @@
   height: 100%;
   pointer-events: none;
   overflow: visible;
-  z-index: 2; /* 确保虚线外框在底色之上，完美围住底色 */
+  z-index: 2;
 }
 
 .bubble-svg path {
   fill: none;
   stroke: var(--color-stroke-bubble);
   stroke-width: 1.5px;
-  stroke-dasharray: 24 4 2 4 7 4 15 4; /* 较长线(24) 空(4) 极短线(2) 空(4) 略长短线(7) 空(4) 另一条较长线(15) 空(4) */
+  stroke-dasharray: 24 4 2 4 7 4 15 4;
   stroke-linecap: round;
-  stroke-linejoin: round;
+  stroke-linejoin="round";
 }
 
-/* 照片消息（无气泡框、无虚线外框与无背景色） */
+/* 照片消息 */
 .bubble-wrapper.image-wrapper .bubble-svg {
   display: none;
 }
@@ -238,10 +316,45 @@
   cursor: pointer;
 }
 
-/* ==================== 底部栏 ==================== */
+/* ==================== 底部栏与引用预览框 ==================== */
+.bottom-container {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.quote-preview-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e6f4eb;
+  border-top: 1px dashed rgba(119, 92, 85, 0.35);
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #775c55;
+}
+.quote-preview-bar.show {
+  display: flex;
+}
+.quote-preview-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+.quote-preview-close {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  color: #775c55;
+  padding: 0 4px;
+}
+
 .bottom-bar {
   background-color: var(--color-bar-bg);
-  padding-top: 16px;
+  padding-top: 12px;
   padding-bottom: max(26px, env(safe-area-inset-bottom));
   padding-left: max(12px, env(safe-area-inset-left));
   padding-right: max(12px, env(safe-area-inset-right));
@@ -356,6 +469,47 @@
 
 .btn-send:active {
   background-color: var(--color-btn-active-bg);
+}
+
+/* 长按浮动菜单遮罩 */
+.context-menu-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 350;
+  display: none;
+}
+.context-menu-overlay.show {
+  display: block;
+}
+.context-menu {
+  position: absolute;
+  background: #fbfefc;
+  border: 1.5px solid var(--color-stroke-bubble);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(46, 31, 25, 0.18);
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  z-index: 351;
+  transform: translate(-50%, -100%);
+}
+.context-menu-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  background: #eef8f0;
+  border: 1px solid var(--color-stroke-bubble);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.context-menu-btn:active {
+  background: #d9f0e1;
+}
+.context-menu-btn.danger {
+  background: #e5dad4;
 }
 
 /* ==================== 功能子页面面板 ==================== */

@@ -18,6 +18,13 @@
 <body>
 
 <div class="chat-app">
+  <!-- 多选删除顶部提示栏 -->
+  <div class="multi-select-bar" id="multi-select-bar">
+    <button class="cute-btn" id="btn-cancel-multi-select">取消</button>
+    <span id="multi-select-count">已选择 0 条消息</span>
+    <button class="cute-btn danger" id="btn-delete-selected-msgs">删除</button>
+  </div>
+
   <!-- 二、顶部栏 -->
   <header class="top-bar">
     <div class="top-left">
@@ -68,31 +75,39 @@
     <!-- 用户发消息后动态生成聊天内容与时间提示 -->
   </main>
 
-  <!-- 四、底部栏 -->
-  <footer class="bottom-bar">
-    <!-- 1. 泡泡键 -->
-    <button class="btn-bubbles" aria-label="泡泡键">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.7" stroke-linecap="round">
-        <circle cx="8" cy="13" r="5" fill="#eef8f0"/>
-        <circle cx="17" cy="7" r="2.5" fill="#eef8f0"/>
-        <circle cx="16" cy="16" r="3.5" fill="#eef8f0"/>
-      </svg>
-    </button>
+  <!-- 四、底部栏区域 -->
+  <div class="bottom-container">
+    <!-- 引用消息预览框 -->
+    <div class="quote-preview-bar" id="quote-preview-bar">
+      <span class="quote-preview-text" id="quote-preview-text">引用: </span>
+      <span class="quote-preview-close" id="btn-cancel-quote">✕</span>
+    </div>
 
-    <!-- 2. 输入框 -->
-    <input type="text" class="chat-input" id="chat-input" placeholder="输入消息..." />
+    <footer class="bottom-bar">
+      <!-- 1. 泡泡键 -->
+      <button class="btn-bubbles" aria-label="泡泡键">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="1.7" stroke-linecap="round">
+          <circle cx="8" cy="13" r="5" fill="#eef8f0"/>
+          <circle cx="17" cy="7" r="2.5" fill="#eef8f0"/>
+          <circle cx="16" cy="16" r="3.5" fill="#eef8f0"/>
+        </svg>
+      </button>
 
-    <!-- 3. 功能键 -->
-    <button class="btn-kaomoji" aria-label="功能键">ᗜ֊ᗜ</button>
+      <!-- 2. 输入框 -->
+      <input type="text" class="chat-input" id="chat-input" placeholder="输入消息..." />
 
-    <!-- 4. 发送键 -->
-    <button class="btn-send" id="btn-send" aria-label="发送">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="22" y1="2" x2="11" y2="13"/>
-        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-      </svg>
-    </button>
-  </footer>
+      <!-- 3. 功能键 -->
+      <button class="btn-kaomoji" aria-label="功能键">ᗜ֊ᗜ</button>
+
+      <!-- 4. 发送键 -->
+      <button class="btn-send" id="btn-send" aria-label="发送">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e1f19" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </footer>
+  </div>
 
   <!-- 功能键展开的子页面面板 -->
   <div class="feature-panel" id="feature-panel">
@@ -721,6 +736,16 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- 长按消息弹出菜单 -->
+<div class="context-menu-overlay" id="context-menu-overlay">
+  <div class="context-menu" id="context-menu">
+    <button class="context-menu-btn" id="ctx-btn-quote">引用</button>
+    <button class="context-menu-btn" id="ctx-btn-annotate">注释</button>
+    <button class="context-menu-btn" id="ctx-btn-edit" style="display:none;">编辑</button>
+    <button class="context-menu-btn danger" id="ctx-btn-delete">删除</button>
   </div>
 </div>
 
