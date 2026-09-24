@@ -1,5 +1,5 @@
 /**
- * 词库数据、表情包与聊天记录状态管理模块
+ * 词库数据、表情包、系统设置与聊天记录状态管理模块
  */
 (function (global) {
   'use strict';
@@ -7,6 +7,7 @@
   const STORAGE_KEY = 'night_glow_dict_groups';
   const STICKER_KEY = 'night_glow_stickers';
   const CHAT_KEY = 'night_glow_chat_history';
+  const SYSTEM_KEY = 'night_glow_system_settings';
 
   function loadData(key) {
     try {
@@ -34,6 +35,31 @@
     colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
   };
   let chatHistory = loadData(CHAT_KEY) || [];
+
+  const defaultSystemState = {
+    avatars: { opponent: '', me: '' },
+    nicknames: { opponent: '顾时夜', me: '我' },
+    bubbles: {
+      opponent: { bgColor: '#f2fbfc', strokeColor: '#775c55', textColor: '#2e1f19', fontSize: 14 },
+      me: { bgColor: '#d5eae3', strokeColor: '#775c55', textColor: '#2e1f19', fontSize: 14 },
+      css: ''
+    },
+    globalFontSize: 14,
+    theme: { topBottomBg: '#eef8f0', topBottomImg: '', css: '' },
+    chatBg: { type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial', image: '' },
+    replyStrategy: {
+      minDelay: 2,
+      maxDelay: 5,
+      replyCountMin: 1,
+      replyCountMax: 3,
+      proactiveProb: 20,
+      proactiveIntervalMin: 10,
+      proactiveIntervalMax: 30,
+      proactiveUnit: 'min'
+    }
+  };
+
+  let systemSettings = loadData(SYSTEM_KEY) || defaultSystemState;
 
   global.DictState = {
     getGroups() { return groups; },
@@ -154,6 +180,29 @@
     }
   };
 
+  global.SystemState = {
+    getSettings() { return systemSettings; },
+    setSettings(newSettings) {
+      systemSettings = Object.assign({}, defaultSystemState, newSettings);
+      saveData(SYSTEM_KEY, systemSettings);
+    },
+    updateSettings(partial) {
+      if (partial.avatars) Object.assign(systemSettings.avatars, partial.avatars);
+      if (partial.nicknames) Object.assign(systemSettings.nicknames, partial.nicknames);
+      if (partial.bubbles) {
+        if (partial.bubbles.opponent) Object.assign(systemSettings.bubbles.opponent, partial.bubbles.opponent);
+        if (partial.bubbles.me) Object.assign(systemSettings.bubbles.me, partial.bubbles.me);
+        if (partial.bubbles.css !== undefined) systemSettings.bubbles.css = partial.bubbles.css;
+      }
+      if (partial.globalFontSize !== undefined) systemSettings.globalFontSize = partial.globalFontSize;
+      if (partial.theme) Object.assign(systemSettings.theme, partial.theme);
+      if (partial.chatBg) Object.assign(systemSettings.chatBg, partial.chatBg);
+      if (partial.replyStrategy) Object.assign(systemSettings.replyStrategy, partial.replyStrategy);
+
+      saveData(SYSTEM_KEY, systemSettings);
+    }
+  };
+
   global.ChatState = {
     getHistory() { return chatHistory; },
     addMessage(msg) {
@@ -177,6 +226,7 @@
         exportedAt: new Date().toISOString(),
         dictGroups: groups,
         stickers: stickerState,
+        system: systemSettings,
         chatHistory: chatHistory
       };
       return JSON.stringify(allData, null, 2);
@@ -189,6 +239,9 @@
         }
         if (parsed.stickers) {
           global.StickerState.setData(parsed.stickers);
+        }
+        if (parsed.system) {
+          global.SystemState.setSettings(parsed.system);
         }
         if (parsed.chatHistory && Array.isArray(parsed.chatHistory)) {
           global.ChatState.setHistory(parsed.chatHistory);
@@ -207,6 +260,7 @@
         lastColor: '#775c55',
         colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
       });
+      global.SystemState.setSettings(defaultSystemState);
       global.ChatState.clearHistory();
     }
   };

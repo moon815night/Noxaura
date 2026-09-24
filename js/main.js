@@ -1,5 +1,5 @@
 /**
- * 入口脚本：初始化页面、串联各模块。
+ * 入口脚本：初始化页面、串联各模块与回复策略定时器。
  */
 (function () {
   'use strict';
@@ -20,7 +20,7 @@
     const albumFileInput = document.getElementById('album-file-input');
     const imageOverlay = document.getElementById('image-overlay');
 
-    // 载入本地存储的历史聊天记录
+    // 载入本地存储的历史聊天记录与系统样式
     loadChatHistoryUI();
 
     // 连发模式标记
@@ -63,7 +63,6 @@
 
     if (btnKaomoji && featurePanel) {
       btnKaomoji.addEventListener('click', () => {
-        // 如果表情面板开着，先关掉
         if (window.StickerUI) window.StickerUI.closePanel();
         const isOpen = featurePanel.classList.toggle('open');
         btnKaomoji.classList.toggle('active', isOpen);
@@ -74,10 +73,16 @@
 
     chatInput.addEventListener('input', updateSendBtnState);
 
-    // 触发对方回复逻辑（支持字卡与表情包混发）
+    // 触发对方回复逻辑（读取系统回复策略参数）
     function triggerOpponentReply() {
-      const delayMs = Math.floor(Math.random() * 5000) + 2000;
-      const count = Math.floor(Math.random() * 3) + 1;
+      const st = window.SystemState ? window.SystemState.getSettings().replyStrategy : { minDelay: 2, maxDelay: 5, replyCountMin: 1, replyCountMax: 3 };
+      const minMs = (st.minDelay || 2) * 1000;
+      const maxMs = (st.maxDelay || 5) * 1000;
+      const delayMs = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+
+      const cMin = st.replyCountMin || 1;
+      const cMax = st.replyCountMax || 3;
+      const count = Math.floor(Math.random() * (cMax - cMin + 1)) + cMin;
 
       setTimeout(() => {
         let replies = [];
@@ -98,6 +103,24 @@
         });
       }, delayMs);
     }
+
+    // 联系人主动发消息定时检查机制 (20% 概率)
+    function setupProactiveTimer() {
+      const st = window.SystemState ? window.SystemState.getSettings().replyStrategy : { proactiveProb: 20, proactiveIntervalMin: 10, proactiveIntervalMax: 30, proactiveUnit: 'min' };
+      const unitMult = st.proactiveUnit === 'hour' ? 3600000 : 60000;
+      const minMs = (st.proactiveIntervalMin || 10) * unitMult;
+      const maxMs = (st.proactiveIntervalMax || 30) * unitMult;
+      const nextInterval = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+
+      setTimeout(() => {
+        const rand = Math.random() * 100;
+        if (rand <= (st.proactiveProb || 20)) {
+          triggerOpponentReply();
+        }
+        setupProactiveTimer();
+      }, nextInterval);
+    }
+    setupProactiveTimer();
 
     function handleSendText() {
       const text = chatInput.value.trim();
@@ -158,7 +181,6 @@
       btnCloseSettings.addEventListener('click', () => { settingsOverlay.classList.remove('show'); });
     }
 
-    // 暴露给外部的回复触发器
     window.triggerReply = triggerOpponentReply;
     window.isContinuousMode = () => isContinuousMode;
   });
