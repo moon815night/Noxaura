@@ -209,10 +209,10 @@
 
 .sticker-body .cute-btn.danger,
 .sticker-modal .cute-btn.danger {
-  background: #d2c0ba;
+  background: #e5dad4;
 }
 
 .sticker-body .cute-btn.danger:active,
 .sticker-modal .cute-btn.danger:active {
-  background: #c3b5a8;
+  background: #d5c3ba;
 }

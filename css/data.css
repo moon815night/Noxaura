@@ -86,7 +86,7 @@
   height: 36px;
   border: 1.2px solid var(--color-stroke-bubble);
   border-radius: 10px;
-  background: var(--color-primary-green);
+  background: #eef8f0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
 
 .btn-data-back:active {
   transform: scale(0.93);
-  background-color: var(--color-accent-green);
+  background-color: #d9f0e1;
 }
 
 .data-toolbar {
@@ -233,11 +233,11 @@
 }
 
 .data-panel .cute-btn.danger {
-  background: #ffe9e9;
+  background: #e5dad4;
   border: 1.2px solid var(--color-stroke-bubble);
   color: #2e1f19;
 }
 
 .data-panel .cute-btn.danger:active {
-  background: #f7d2d2;
+  background: #d5c3ba;
 }

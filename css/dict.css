@@ -103,7 +103,7 @@
   height: 36px;
   border: 1.2px solid var(--color-stroke-bubble);
   border-radius: 10px;
-  background: var(--color-primary-green);
+  background: #eef8f0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@
 
 .btn-dict-back:active {
   transform: scale(0.93);
-  background-color: var(--color-accent-green);
+  background-color: #d9f0e1;
 }
 
 .dict-search-box {
@@ -166,7 +166,7 @@
   padding: 0 10px;
   border: 1.2px solid var(--color-stroke-bubble);
   border-radius: 9px;
-  background: var(--color-primary-green);
+  background: #eef8f0;
   color: var(--color-stroke-main);
   font-size: 12px;
   font-weight: 600;
@@ -181,17 +181,17 @@
 
 .cute-btn:active {
   transform: scale(0.95);
-  background: var(--color-accent-green);
+  background: #d9f0e1;
 }
 
 .cute-btn.danger {
-  background: #f2c0ba;
+  background: #e5dad4;
   color: var(--color-stroke-main);
   border: 1.2px solid var(--color-stroke-bubble);
 }
 
 .cute-btn.danger:active {
-  background: #e8a8a0;
+  background: #d5c3ba;
 }
 
 .cute-btn-icon {
