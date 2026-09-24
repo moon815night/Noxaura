@@ -101,24 +101,21 @@
 .btn-dict-back {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(119, 92, 85, 0.35);
+  border: 1.2px solid var(--color-stroke-bubble);
   border-radius: 10px;
-  background: var(--btn-bg-green);
+  background: var(--color-primary-green);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   flex-shrink: 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.04);
-  transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
+  transition: transform 0.1s, background-color 0.15s;
 }
 
 .btn-dict-back:active {
   transform: scale(0.93);
-  background-color: var(--btn-bg-green-active);
+  background-color: var(--color-accent-green);
 }
 
 .dict-search-box {
@@ -163,13 +160,13 @@
   flex-wrap: wrap;
 }
 
-/* 圆润可爱按钮 - 实线最细外边框 + 从中间发散的线性渐变(透明度50%) + 立体毛玻璃质感 */
+/* 纯色手绘风可爱按钮 */
 .cute-btn {
   height: 30px;
   padding: 0 10px;
-  border: 1px solid rgba(119, 92, 85, 0.35);
+  border: 1.2px solid var(--color-stroke-bubble);
   border-radius: 9px;
-  background: var(--btn-bg-green);
+  background: var(--color-primary-green);
   color: var(--color-stroke-main);
   font-size: 12px;
   font-weight: 600;
@@ -179,25 +176,22 @@
   gap: 4px;
   cursor: pointer;
   user-select: none;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.05), 0 2px 5px rgba(0, 0, 0, 0.04);
-  transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
+  transition: transform 0.1s, background-color 0.15s;
 }
 
 .cute-btn:active {
   transform: scale(0.95);
-  background: var(--btn-bg-green-active);
+  background: var(--color-accent-green);
 }
 
 .cute-btn.danger {
-  background: var(--btn-bg-brown);
+  background: #f2c0ba;
   color: var(--color-stroke-main);
-  border: 1px solid rgba(119, 92, 85, 0.35);
+  border: 1.2px solid var(--color-stroke-bubble);
 }
 
 .cute-btn.danger:active {
-  background: var(--btn-bg-brown-active);
+  background: #e8a8a0;
 }
 
 .cute-btn-icon {

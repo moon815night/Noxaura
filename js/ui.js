@@ -13,7 +13,7 @@ function updateBubbleSVG(wrapper) {
 
   const w = bubble.offsetWidth;
   const h = bubble.offsetHeight;
-  const isMe = wrapper.parentElement.classList.contains('me');
+  const isMe = wrapper.closest('.msg-row').classList.contains('me');
 
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
 
@@ -44,15 +44,53 @@ function scrollToBottom(chatContent) {
   chatContent.scrollTop = chatContent.scrollHeight;
 }
 
+// 记录最后一次居中渲染日期的 Key (YYYY-MM-DD)
+let lastDisplayedDateKey = null;
+
+/**
+ * 校验并在当日零点后首次发消息时添加顶部居中年月日
+ */
+function checkAndAppendDateDivider(chatContent, dateObj) {
+  const date = dateObj || new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const dateKey = `${year}-${month}-${day}`;
+
+  if (lastDisplayedDateKey !== dateKey) {
+    lastDisplayedDateKey = dateKey;
+    const divider = document.createElement('div');
+    divider.className = 'chat-date-divider';
+    divider.innerHTML = `<span>${year}年${month}月${day}日</span>`;
+    chatContent.appendChild(divider);
+  }
+}
+
+/**
+ * 格式化时分时间 (HH:mm)
+ */
+function formatMsgTime(dateObj) {
+  const date = dateObj || new Date();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
 /**
  * 生成并添加一条文本消息到界面
  */
-function appendMessage(chatContent, text, isMe = true) {
+function appendMessage(chatContent, text, isMe = true, timestamp = null) {
+  const dateObj = timestamp ? new Date(timestamp) : new Date();
+  checkAndAppendDateDivider(chatContent, dateObj);
+
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
+
+  const col = document.createElement('div');
+  col.className = 'msg-column';
 
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper';
@@ -68,8 +106,16 @@ function appendMessage(chatContent, text, isMe = true) {
 
   wrapper.appendChild(bubble);
   wrapper.appendChild(svg);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = formatMsgTime(dateObj);
+
+  col.appendChild(wrapper);
+  col.appendChild(timeEl);
+
   row.appendChild(avatar);
-  row.appendChild(wrapper);
+  row.appendChild(col);
 
   chatContent.appendChild(row);
   updateBubbleSVG(wrapper);
@@ -81,15 +127,25 @@ function appendMessage(chatContent, text, isMe = true) {
 /**
  * 生成并添加一条图片消息到界面（相册照片）
  */
-function appendImageMessage(chatContent, imgSrc, isMe = true) {
+function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null) {
+  const dateObj = timestamp ? new Date(timestamp) : new Date();
+  checkAndAppendDateDivider(chatContent, dateObj);
+
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
+
+  const col = document.createElement('div');
+  col.className = 'msg-column';
+
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper image-wrapper';
+
   const bubble = document.createElement('div');
   bubble.className = 'bubble bubble-image';
+
   const img = document.createElement('img');
   img.className = 'bubble-image-img';
   img.src = imgSrc;
@@ -102,10 +158,20 @@ function appendImageMessage(chatContent, imgSrc, isMe = true) {
       imageOverlay.classList.add('show');
     }
   });
+
   bubble.appendChild(img);
   wrapper.appendChild(bubble);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = formatMsgTime(dateObj);
+
+  col.appendChild(wrapper);
+  col.appendChild(timeEl);
+
   row.appendChild(avatar);
-  row.appendChild(wrapper);
+  row.appendChild(col);
+
   chatContent.appendChild(row);
   scrollToBottom(chatContent);
 }
@@ -113,23 +179,43 @@ function appendImageMessage(chatContent, imgSrc, isMe = true) {
 /**
  * 生成并添加一条表情包消息到界面（无气泡、无描边）
  */
-function appendStickerMessage(chatContent, imgSrc, isMe = true) {
+function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null) {
+  const dateObj = timestamp ? new Date(timestamp) : new Date();
+  checkAndAppendDateDivider(chatContent, dateObj);
+
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'me' : 'opponent'}`;
+
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
+
+  const col = document.createElement('div');
+  col.className = 'msg-column';
+
   const wrapper = document.createElement('div');
   wrapper.className = 'bubble-wrapper sticker-wrapper';
+
   const bubble = document.createElement('div');
   bubble.className = 'bubble bubble-sticker';
+
   const img = document.createElement('img');
   img.className = 'sticker-img';
   img.src = imgSrc;
   img.onload = () => { scrollToBottom(chatContent); };
+
   bubble.appendChild(img);
   wrapper.appendChild(bubble);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time';
+  timeEl.textContent = formatMsgTime(dateObj);
+
+  col.appendChild(wrapper);
+  col.appendChild(timeEl);
+
   row.appendChild(avatar);
-  row.appendChild(wrapper);
+  row.appendChild(col);
+
   chatContent.appendChild(row);
   scrollToBottom(chatContent);
 }
