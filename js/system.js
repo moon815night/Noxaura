@@ -27,6 +27,7 @@
         if (settingsOverlay) settingsOverlay.classList.remove('show');
         systemOverlay.classList.add('show');
         initSystemFormValues();
+        renderPresetsUI();
         updateBubblePreview();
       });
     }
@@ -52,18 +53,17 @@
       }
     });
 
-    // 绑定系统设置中各项控件的事件处理
     bindSystemEvents();
   });
 
   function initSystemFormValues() {
     const s = global.SystemState.getSettings();
 
-    // 账号与名片
+    // 资料
     setVal('sys-nickname-opp', s.nicknames.opponent);
     setVal('sys-nickname-me', s.nicknames.me);
 
-    // 气泡设置
+    // 气泡设置 (他的/我的)
     setVal('sys-bubble-opp-bg', s.bubbles.opponent.bgColor);
     setVal('sys-bubble-opp-bg-hex', s.bubbles.opponent.bgColor);
     setVal('sys-bubble-opp-stroke', s.bubbles.opponent.strokeColor);
@@ -71,20 +71,21 @@
     setVal('sys-bubble-opp-size', s.bubbles.opponent.fontSize);
 
     setVal('sys-bubble-me-bg', s.bubbles.me.bgColor);
-    setVal('sys-bubble-me-bg-hex', s.bubbles.me.bgColor);
+    setVal('sys-bubble-me-hex', s.bubbles.me.bgColor);
     setVal('sys-bubble-me-stroke', s.bubbles.me.strokeColor);
     setVal('sys-bubble-me-text', s.bubbles.me.textColor);
     setVal('sys-bubble-me-size', s.bubbles.me.fontSize);
 
-    setVal('sys-global-font-size', s.globalFontSize);
-    setVal('sys-bubble-css', s.bubbles.css);
+    setVal('sys-global-font-size', s.fonts.globalFontSize || 14);
+    setVal('sys-bubble-css', s.bubbles.css || '');
 
-    // 顶底栏与主题
+    // 主题
+    setVal('sys-theme-css', s.theme.css || '');
+
+    // 顶底栏与背景
     setVal('sys-bar-bg', s.theme.topBottomBg);
     setVal('sys-bar-bg-hex', s.theme.topBottomBg);
-    setVal('sys-theme-css', s.theme.css);
 
-    // 聊天背景
     setVal('sys-chatbg-type', s.chatBg.type);
     setVal('sys-chatbg-color1', s.chatBg.color1);
     setVal('sys-chatbg-color2', s.chatBg.color2);
@@ -99,6 +100,61 @@
     setVal('sys-proactive-min', s.replyStrategy.proactiveIntervalMin);
     setVal('sys-proactive-max', s.replyStrategy.proactiveIntervalMax);
     setVal('sys-proactive-unit', s.replyStrategy.proactiveUnit);
+  }
+
+  function renderPresetsUI() {
+    const s = global.SystemState.getSettings();
+
+    // 气泡预设渲染
+    const bGrid = document.getElementById('bubble-presets-grid');
+    if (bGrid) {
+      bGrid.innerHTML = '';
+      s.bubbles.presets.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = `preset-card ${s.bubbles.activePreset === idx ? 'active' : ''}`;
+        card.textContent = p.name;
+        card.onclick = () => {
+          global.SystemState.updateSettings({
+            bubbles: {
+              activePreset: idx,
+              opponent: { bgColor: p.oppBg },
+              me: { bgColor: p.meBg }
+            }
+          });
+          initSystemFormValues();
+          renderPresetsUI();
+          updateBubblePreview();
+          global.applySystemStyles();
+        };
+        bGrid.appendChild(card);
+      });
+    }
+
+    // 背景预设渲染
+    const bgGrid = document.getElementById('bg-presets-grid');
+    if (bgGrid) {
+      bgGrid.innerHTML = '';
+      s.chatBg.presets.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = `preset-card ${s.chatBg.activePreset === idx ? 'active' : ''}`;
+        card.textContent = p.name;
+        card.onclick = () => {
+          global.SystemState.updateSettings({
+            chatBg: {
+              activePreset: idx,
+              type: p.type,
+              color1: p.color1,
+              color2: p.color2,
+              gradientType: p.gradientType
+            }
+          });
+          initSystemFormValues();
+          renderPresetsUI();
+          global.applySystemStyles();
+        };
+        bgGrid.appendChild(card);
+      });
+    }
   }
 
   function bindSystemEvents() {
@@ -122,7 +178,7 @@
       global.applySystemStyles();
     });
 
-    // 对方气泡绑定
+    // 他的气泡绑定
     bindColorSync('sys-bubble-opp-bg', 'sys-bubble-opp-bg-hex', (c) => {
       global.SystemState.updateSettings({ bubbles: { opponent: { bgColor: c } } });
       updateBubblePreview();
@@ -144,8 +200,8 @@
       global.applySystemStyles();
     });
 
-    // 我方气泡绑定
-    bindColorSync('sys-bubble-me-bg', 'sys-bubble-me-bg-hex', (c) => {
+    // 我的气泡绑定
+    bindColorSync('sys-bubble-me-bg', 'sys-bubble-me-hex', (c) => {
       global.SystemState.updateSettings({ bubbles: { me: { bgColor: c } } });
       updateBubblePreview();
       global.applySystemStyles();
@@ -166,12 +222,16 @@
       global.applySystemStyles();
     });
 
+    // 字体与 CSS
     onInput('sys-global-font-size', (val) => {
-      global.SystemState.updateSettings({ globalFontSize: parseInt(val) || 14 });
+      global.SystemState.updateSettings({ fonts: { globalFontSize: parseInt(val) || 14 } });
+      global.applySystemStyles();
+    });
+    bindImageUpload('sys-font-file', (fontBase64) => {
+      global.SystemState.updateSettings({ fonts: { fontCustom: fontBase64 } });
       global.applySystemStyles();
     });
 
-    // 气泡 CSS 导入与重置
     onClick('btn-apply-bubble-css', () => {
       const code = document.getElementById('sys-bubble-css').value;
       global.SystemState.updateSettings({ bubbles: { css: code } });
@@ -193,7 +253,7 @@
       global.applySystemStyles();
     });
 
-    // 主题 CSS 导入与复制
+    // 主题 CSS
     onClick('btn-apply-theme-css', () => {
       const code = document.getElementById('sys-theme-css').value;
       global.SystemState.updateSettings({ theme: { css: code } });
@@ -201,10 +261,10 @@
     });
     onClick('btn-copy-default-theme-css', () => {
       const defaultCss = `:root {\n  --bg-gradient-center: #dcfae2;\n  --bg-gradient-100: #fbfefc;\n  --color-bar-bg: #eef8f0;\n}`;
-      navigator.clipboard.writeText(defaultCss).then(() => alert('默认主题 CSS 已复制到剪贴板'));
+      navigator.clipboard.writeText(defaultCss).then(() => alert('默认主题 CSS 模板已复制到剪贴板'));
     });
 
-    // 聊天背景设置
+    // 聊天背景
     onInput('sys-chatbg-type', (val) => {
       global.SystemState.updateSettings({ chatBg: { type: val } });
       global.applySystemStyles();
@@ -233,7 +293,7 @@
       global.applySystemStyles();
     });
 
-    // 回复策略设置
+    // 回复策略
     const updateReplyStrategy = () => {
       global.SystemState.updateSettings({
         replyStrategy: {

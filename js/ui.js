@@ -67,16 +67,22 @@ function applySystemStyles() {
   if (!window.SystemState) return;
   const s = window.SystemState.getSettings();
 
-  // 1. 联系人昵称
+  // 1. 联系人昵称挂载
   const nameEl = document.getElementById('display-contact-name');
   if (nameEl) nameEl.textContent = s.nicknames.opponent || '顾时夜';
 
-  // 2. 动态 CSS 样式节点
+  // 2. 动态 CSS 节点
   let styleEl = document.getElementById('dynamic-system-styles');
   if (!styleEl) {
     styleEl = document.createElement('style');
     styleEl.id = 'dynamic-system-styles';
     document.head.appendChild(styleEl);
+  }
+
+  // 字体导入支持
+  let fontFaceCss = '';
+  if (s.fonts && s.fonts.fontCustom) {
+    fontFaceCss = `@font-face { font-family: 'CustomLoveFont'; src: url('${s.fonts.fontCustom}'); } * { font-family: 'CustomLoveFont', -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif !important; }`;
   }
 
   let chatBgCss = '';
@@ -103,7 +109,8 @@ function applySystemStyles() {
   let avatarMeCss = s.avatars.me ? `background-image: url('${s.avatars.me}') !important; background-size: cover !important;` : '';
 
   styleEl.innerHTML = `
-    html, body { font-size: ${s.globalFontSize || 14}px; }
+    ${fontFaceCss}
+    html, body { font-size: ${(s.fonts && s.fonts.globalFontSize) || 14}px; }
     .chat-app { ${chatBgCss} }
     .top-bar, .bottom-bar, .feature-panel, .sticker-panel { ${barBgCss} }
     

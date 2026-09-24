@@ -1,4 +1,4 @@
-/* ==================== 系统 (主题与策略设置) 子页面样式 ==================== */
+/* ==================== 系统 (温馨恋人风) 子页面样式 ==================== */
 .system-overlay {
   position: absolute;
   top: 0;
@@ -28,12 +28,12 @@
   max-width: 620px;
   height: 88vh;
   max-height: 750px;
-  background: rgba(244, 251, 246, 0.96);
+  background: rgba(246, 251, 247, 0.96);
   border: 1.5px solid var(--color-stroke-bubble);
-  border-radius: 20px;
+  border-radius: 24px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 14px 16px 16px 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(46, 31, 25, 0.15);
@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
   border-bottom: 1px dashed rgba(119, 92, 85, 0.35);
   flex-shrink: 0;
 }
@@ -66,9 +66,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 17px;
+  font-size: 17.5px;
   font-weight: 700;
   color: var(--color-stroke-bubble);
+  letter-spacing: 0.5px;
 }
 
 .btn-system-close {
@@ -85,7 +86,7 @@
   width: 36px;
   height: 36px;
   border: 1.2px solid var(--color-stroke-bubble);
-  border-radius: 10px;
+  border-radius: 12px;
   background: #eef8f0;
   cursor: pointer;
   display: flex;
@@ -122,11 +123,11 @@
   border-radius: 4px;
 }
 
-/* 折叠手绘卡片组件 */
+/* 折叠卡片 */
 .system-fold-card {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.8);
   border: 1.2px solid rgba(119, 92, 85, 0.3);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   transition: border-color 0.2s;
   flex-shrink: 0;
@@ -136,8 +137,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: rgba(230, 244, 235, 0.65);
+  padding: 11px 14px;
+  background: rgba(230, 244, 235, 0.7);
   cursor: pointer;
   user-select: none;
 }
@@ -145,10 +146,18 @@
 .system-fold-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 10px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--color-text-main);
+}
+
+/* 棕色圆润手绘线条图标 */
+.fold-cute-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
 }
 
 .system-fold-icon {
@@ -161,7 +170,7 @@
 }
 
 .system-fold-body {
-  padding: 12px 14px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -169,6 +178,24 @@
 
 .system-fold-card.collapsed .system-fold-body {
   display: none;
+}
+
+/* 分块组结构 */
+.system-card-block {
+  background: rgba(249, 253, 250, 0.6);
+  border: 1px dashed rgba(119, 92, 85, 0.25);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.system-block-sub {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #775c55;
+  margin-bottom: 2px;
 }
 
 .system-item-row {
@@ -182,15 +209,14 @@
   font-size: 12.5px;
   font-weight: 600;
   color: #775c55;
-  min-width: 70px;
 }
 
 .system-input-field {
   height: 32px;
   background: rgba(255, 255, 255, 0.9);
   border: 1.2px solid var(--color-input-border);
-  border-radius: 8px;
-  padding: 0 8px;
+  border-radius: 10px;
+  padding: 0 10px;
   font-size: 12.5px;
   color: var(--color-text-main);
   outline: none;
@@ -201,27 +227,52 @@
   text-align: center;
 }
 
+/* 手绘风简短上传按钮 */
+.cute-file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.2px solid var(--color-stroke-bubble);
+  background: #eef8f0;
+  color: var(--color-text-main);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.cute-file-btn:active {
+  transform: scale(0.95);
+  background-color: #d9f0e1;
+}
+
+.cute-file-btn input[type="file"] {
+  display: none;
+}
+
 /* 实时预览区 */
 .bubble-preview-box {
   width: 100%;
   padding: 12px;
   background: rgba(235, 248, 238, 0.5);
   border: 1.2px dashed rgba(119, 92, 85, 0.35);
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 4px;
 }
 
 .preview-title {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #775c55;
-  margin-bottom: 2px;
 }
 
-/* 预设选择组 */
+/* 预设卡片 */
 .preset-grid {
   display: flex;
   align-items: center;
@@ -230,38 +281,38 @@
 }
 
 .preset-card {
-  width: 60px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(119, 92, 85, 0.3);
-  background: #ffffff;
+  flex: 1;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.2px dashed rgba(119, 92, 85, 0.35);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 11.5px;
+  font-weight: 600;
   color: #775c55;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.15s, border-color 0.15s;
+  transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
 }
 
 .preset-card:active {
-  transform: scale(0.93);
+  transform: scale(0.95);
 }
 
 .preset-card.active {
+  border-style: solid;
   border-color: var(--color-stroke-bubble);
-  box-shadow: 0 0 0 1.5px var(--color-accent-green);
+  background: #e6f4eb;
+  color: var(--color-text-main);
 }
 
-/* 代码导入输入框 */
 .css-code-area {
   width: 100%;
-  height: 80px;
+  height: 75px;
   background: rgba(255, 255, 255, 0.9);
   border: 1.2px solid var(--color-input-border);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 6px 8px;
   font-family: monospace;
   font-size: 11.5px;

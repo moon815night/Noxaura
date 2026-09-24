@@ -29,8 +29,8 @@
 
   let groups = loadData(STORAGE_KEY) || [];
   let stickerState = loadData(STICKER_KEY) || {
-    myStickers: [], // { id, src, count }
-    groups: [],     // { id, name, icon, titleColor, stickers: [] }
+    myStickers: [],
+    groups: [],
     lastColor: '#775c55',
     colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
   };
@@ -42,11 +42,25 @@
     bubbles: {
       opponent: { bgColor: '#f2fbfc', strokeColor: '#775c55', textColor: '#2e1f19', fontSize: 14 },
       me: { bgColor: '#d5eae3', strokeColor: '#775c55', textColor: '#2e1f19', fontSize: 14 },
-      css: ''
+      css: '',
+      activePreset: 0,
+      presets: [
+        { name: '清新绿', oppBg: '#f2fbfc', meBg: '#d5eae3' },
+        { name: '暖暖棕', oppBg: '#faf4f0', meBg: '#e5dad4' },
+        { name: '薄荷蓝', oppBg: '#f0f9ff', meBg: '#d0f0ed' }
+      ]
     },
-    globalFontSize: 14,
+    fonts: { globalFontSize: 14, fontCustom: '' },
     theme: { topBottomBg: '#eef8f0', topBottomImg: '', css: '' },
-    chatBg: { type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial', image: '' },
+    chatBg: {
+      type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial', image: '',
+      activePreset: 0,
+      presets: [
+        { name: '默认草绿', type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial' },
+        { name: '温馨暖白', type: 'gradient', color1: '#faf7f2', color2: '#ffffff', gradientType: 'solid' },
+        { name: '柔暖粉杏', type: 'gradient', color1: '#faebea', color2: '#fcf8f7', gradientType: 'linear' }
+      ]
+    },
     replyStrategy: {
       minDelay: 2,
       maxDelay: 5,
@@ -59,7 +73,7 @@
     }
   };
 
-  let systemSettings = loadData(SYSTEM_KEY) || defaultSystemState;
+  let systemSettings = Object.assign({}, defaultSystemState, loadData(SYSTEM_KEY) || {});
 
   global.DictState = {
     getGroups() { return groups; },
@@ -193,8 +207,9 @@
         if (partial.bubbles.opponent) Object.assign(systemSettings.bubbles.opponent, partial.bubbles.opponent);
         if (partial.bubbles.me) Object.assign(systemSettings.bubbles.me, partial.bubbles.me);
         if (partial.bubbles.css !== undefined) systemSettings.bubbles.css = partial.bubbles.css;
+        if (partial.bubbles.activePreset !== undefined) systemSettings.bubbles.activePreset = partial.bubbles.activePreset;
       }
-      if (partial.globalFontSize !== undefined) systemSettings.globalFontSize = partial.globalFontSize;
+      if (partial.fonts) Object.assign(systemSettings.fonts, partial.fonts);
       if (partial.theme) Object.assign(systemSettings.theme, partial.theme);
       if (partial.chatBg) Object.assign(systemSettings.chatBg, partial.chatBg);
       if (partial.replyStrategy) Object.assign(systemSettings.replyStrategy, partial.replyStrategy);

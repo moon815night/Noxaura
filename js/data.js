@@ -31,7 +31,7 @@
 
     if (!dataOverlay) return;
 
-    // 绑定所有的折叠收纳卡片逻辑（默认已处于收起状态）
+    // 绑定折叠收纳卡片逻辑
     document.querySelectorAll('.data-fold-header').forEach((header) => {
       header.addEventListener('click', () => {
         const card = header.closest('.data-fold-card');
@@ -51,7 +51,6 @@
       });
     }
 
-    // 关闭数据管理面板
     function closeDataSubpage() {
       dataOverlay.classList.remove('show');
     }
@@ -74,7 +73,6 @@
       }
     });
 
-    // 初始化日历导出时间选择框默认值为今天（精准使用本地时区年月日）
     function initDefaultDates() {
       const today = getLocalDate();
       if (exportStartDate && !exportStartDate.value) exportStartDate.value = today;
@@ -127,7 +125,7 @@
     // 3. 删除聊天记录
     if (btnClearChat) {
       btnClearChat.addEventListener('click', () => {
-        showConfirmModal('确认清空聊天', '确定要删除所有的本地聊天记录吗？词库与表情包将被保留。', () => {
+        showConfirmModal('确认清空聊天', '确定要删除所有的本地聊天记录吗？词库、系统设置与表情包将被保留。', () => {
           global.ChatState.clearHistory();
           clearChatDisplay();
           alertModal('聊天记录已清空');
@@ -138,7 +136,7 @@
     // 4. 删除全部数据
     if (btnClearAllData) {
       btnClearAllData.addEventListener('click', () => {
-        showConfirmModal('确认重置全量数据', '警告：此操作将清空聊天记录、自定义表情包、词库字卡等所有本地数据，且不可撤销！确定要重置吗？', () => {
+        showConfirmModal('确认重置全量数据', '警告：此操作将清空聊天记录、系统个性化设置、自定义表情包、词库字卡等所有本地数据，且不可撤销！确定要重置吗？', () => {
           global.DataState.clearAllData();
           clearChatDisplay();
           alertModal('全量数据已重置');
@@ -180,6 +178,8 @@
     function exportChatToHTML(messages, startVal, endVal) {
       let chatItemsHtml = '';
       let currentDateKey = null;
+      const sys = global.SystemState ? global.SystemState.getSettings() : null;
+      const oppName = sys ? (sys.nicknames.opponent || '顾时夜') : '顾时夜';
 
       messages.forEach((msg) => {
         const d = new Date(msg.timestamp || Date.now());
@@ -258,7 +258,6 @@
       align-items: center;
     }
     
-    /* 聊天框外部标头区域 */
     .export-outer-header {
       width: 100%;
       max-width: 650px;
@@ -279,7 +278,6 @@
       margin-bottom: 12px;
     }
     
-    /* 聊天框外部加粗双分割线 */
     .export-divider-group {
       display: flex;
       flex-direction: column;
@@ -296,7 +294,6 @@
       background-repeat: repeat-x;
     }
 
-    /* 聊天框主体（与聊天页面背景完全同步） */
     .export-container {
       width: 100%;
       max-width: 650px;
@@ -368,7 +365,7 @@
   </div>
   <div class="export-container">
     <div class="top-bar">
-      <div class="contact-name">顾时夜</div>
+      <div class="contact-name">${escapeHtml(oppName)}</div>
     </div>
     <div class="chat-content">
       ${chatItemsHtml}
@@ -390,10 +387,6 @@
 
     function formatDateFile(d) {
       return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function formatDateReadable(d) {
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     }
 
     function escapeHtml(str) {
