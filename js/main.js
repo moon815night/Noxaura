@@ -17,6 +17,7 @@
     const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
     const btnAlbum = document.getElementById('btn-album');
+    const btnPat = document.getElementById('btn-pat');
     const albumFileInput = document.getElementById('album-file-input');
     const imageOverlay = document.getElementById('image-overlay');
 
@@ -146,6 +147,14 @@
           triggerOpponentReply();
         });
         albumFileInput.value = '';
+      });
+    }
+
+    // 拍一拍逻辑
+    if (btnPat) {
+      btnPat.addEventListener('click', () => {
+        appendMessage(chatContent, '你拍了拍顾时夜', true);
+        triggerOpponentReply();
       });
     }
 
