@@ -325,6 +325,25 @@ function appendImageMessage(chatContent, imgSrc, isMe = true, timestamp = null, 
   return msgId;
 }
 
+function appendPatMessage(chatContent, text, timestamp = null, saveToHistory = true, existingMsgId = null) {
+  const msgId = existingMsgId || ('m_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+  const dateObj = new Date(timestamp || Date.now());
+  checkAndAppendDateDivider(chatContent, dateObj);
+
+  const divider = document.createElement('div');
+  divider.className = 'chat-pat-divider';
+  divider.setAttribute('data-msg-id', msgId);
+  divider.innerHTML = `<span>${text}</span>`;
+  chatContent.appendChild(divider);
+  scrollToBottom(chatContent);
+
+  if (saveToHistory && window.ChatState) {
+    window.ChatState.addMessage({ id: msgId, type: 'pat', text, isMe: true, timestamp: Date.now() });
+  }
+
+  return msgId;
+}
+
 function appendStickerMessage(chatContent, imgSrc, isMe = true, timestamp = null, saveToHistory = true, quoteData = null, annotationText = null, existingMsgId = null) {
   const msgId = existingMsgId || ('m_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
   const { row, avatar, col, dateObj } = createMsgRowBase(isMe, timestamp, msgId);
@@ -377,6 +396,8 @@ function loadChatHistoryUI() {
       appendImageMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
     } else if (msg.type === 'sticker') {
       appendStickerMessage(chatContent, msg.src, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
+    } else if (msg.type === 'pat') {
+      appendPatMessage(chatContent, msg.text, msg.timestamp, false, msg.id);
     } else {
       appendMessage(chatContent, msg.text, msg.isMe, msg.timestamp, false, msg.quote, msg.annotation, msg.id);
     }

@@ -17,6 +17,9 @@
     const btnCloseSettings = document.getElementById('btn-close-settings');
     const settingsOverlay = document.getElementById('settings-overlay');
     const btnAlbum = document.getElementById('btn-album');
+    const btnPat = document.getElementById('btn-pat');
+    const patPanel = document.getElementById('pat-panel');
+    const patBody = document.getElementById('pat-body');
     const albumFileInput = document.getElementById('album-file-input');
     const imageOverlay = document.getElementById('image-overlay');
 
@@ -449,6 +452,53 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+    }
+
+    // 拍一拍逻辑
+    if (btnPat && patPanel && patBody) {
+      btnPat.addEventListener('click', () => {
+        if (window.StickerUI) window.StickerUI.closePanel();
+        
+        const isOpen = patPanel.classList.toggle('open');
+        if (isOpen) {
+          renderPatItems();
+        }
+      });
+    }
+
+    function renderPatItems() {
+      if (!patBody) return;
+      patBody.innerHTML = '';
+
+      const s = window.SystemState ? window.SystemState.getSettings() : null;
+      const meName = (s && s.nicknames && s.nicknames.me) ? s.nicknames.me : '我';
+      const oppName = (s && s.nicknames && s.nicknames.opponent) ? s.nicknames.opponent : '顾时夜';
+
+      const defaultPatList = [
+        `${meName} 拍了拍 ${oppName}`,
+        `${meName} 拍了拍 ${oppName} 的肩膀`,
+        `${meName} 拍了拍 ${oppName} 的小脑袋`,
+        `${meName} 拍了拍 ${oppName} 并递上一杯热茶`,
+        `${meName} 拍了拍 ${oppName} 的手心`
+      ];
+
+      defaultPatList.forEach(text => {
+        const item = document.createElement('div');
+        item.className = 'pat-item';
+        item.textContent = text;
+        item.addEventListener('click', () => {
+          if (patPanel) patPanel.classList.remove('open');
+          if (featurePanel) featurePanel.classList.remove('open');
+          if (btnKaomoji) btnKaomoji.classList.remove('active');
+          if (bottomBar) bottomBar.classList.remove('feature-open');
+
+          appendPatMessage(chatContent, text);
+          if (!window.isContinuousMode()) {
+            triggerOpponentReply();
+          }
+        });
+        patBody.appendChild(item);
+      });
     }
 
     // 相册逻辑
