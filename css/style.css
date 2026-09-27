@@ -1,0 +1,145 @@
+/* ============================================================
+   Noxaura 手账本风 · 统一美化层 —— 薄荷渐变版
+   ------------------------------------------------------------
+   思路：绿色不再作为"一整块实色"出现，而是改用「渐变 + 顶部柔光」
+   融进米色里，两种颜色交界的地方不再有硬边。
+   所有全屏面板、卡片、按钮、输入框统一走这一套。
+   ============================================================ */
+
+/* ---------- 0. 月亮图标 / 泡泡图标改成纯线条
+   不用改 html，用 CSS 直接盖掉它们原来的填充色 ---------- */
+.icon-btn svg path,
+.btn-bubbles svg circle {
+  fill: none !important;
+}
+
+:root {
+  --ui-paper:        #faf8f2;   /* 面板纸底 */
+  --ui-glow:         rgba(196, 224, 206, 0.55);    /* 顶部柔光 */
+  --ui-glow-end:     rgba(196, 224, 206, 0);
+  --ui-card-top:     #fdfcf8;
+  --ui-card-bottom:  #eff5ef;
+  --ui-card-line:    rgba(125, 96, 85, 0.26);
+  --ui-inner:        #f9f8f2;
+  --ui-btn:          #fbfaf6;
+  --ui-btn-main-top:    #e8f1ea;
+  --ui-btn-main-bottom: #d0e2d6;
+  --ui-btn-danger:   #f5eae3;
+}
+
+/* ---------- 1. 顶部栏 / 底部栏底：薄玻璃（底部弹出的拍一拍面板保持原样，不动） ---------- */
+.chat-app .top-bar,
+.chat-app .bottom-bar,
+.chat-app .feature-panel,
+.chat-app .sticker-panel {
+  background-color: rgba(252, 254, 252, 0.74) !important;
+  backdrop-filter: blur(9px) saturate(1.08);
+  -webkit-backdrop-filter: blur(9px) saturate(1.08);
+}
+
+/* ---------- 2. 所有全屏面板：米白纸底 + 顶部一层柔光 + 星星 ---------- */
+.settings-panel,
+.system-panel,
+.dict-panel,
+.data-panel,
+.pat-manage-panel {
+  background-color: var(--ui-paper) !important;
+  background-image:
+    radial-gradient(ellipse 130% 55% at 50% 0%, var(--ui-glow) 0%, var(--ui-glow-end) 72%),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyMDAgMjAwJz48ZyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSg4OCw4OCknPjxwb2x5Z29uIHBvaW50cz0nMTIsMi41IDE0LjIzLDguOTMgMjEuMDMsOS4wNiAxNS42MSwxMy4xNyAxNy41OCwxOS42OSAxMiwxNS44IDYuNDIsMTkuNjkgOC4zOSwxMy4xNyAyLjk3LDkuMDYgOS43Nyw4LjkzJyBmaWxsPScjZTNkOGNjJy8+PC9nPjwvc3ZnPg=="),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyMDAgMjAwJz48ZyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSg4OCw4OCkgcm90YXRlKC0xNSknPjxwb2x5Z29uIHBvaW50cz0nMTIsMi41IDE0LjIzLDguOTMgMjEuMDMsOS4wNiAxNS42MSwxMy4xNyAxNy41OCwxOS42OSAxMiwxNS44IDYuNDIsMTkuNjkgOC4zOSwxMy4xNyAyLjk3LDkuMDYgOS43Nyw4LjkzJyBmaWxsPSdub25lJyBzdHJva2U9JyNkN2M4YmEnIHN0cm9rZS13aWR0aD0nMS43JyBzdHJva2UtbGluZWpvaW49J3JvdW5kJy8+PC9nPjwvc3ZnPg=="),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyMDAgMjAwJz48ZyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSg4OCw4OCkgcm90YXRlKDEyKSc+PHBhdGggZD0nTTEyIDIgQzEyLjYgOC41IDE1LjUgMTEuNCAyMiAxMiBDMTUuNSAxMi42IDEyLjYgMTUuNSAxMiAyMiBDMTEuNCAxNS41IDguNSAxMi42IDIgMTIgQzguNSAxMS40IDExLjQgOC41IDEyIDIgWicgZmlsbD0nbm9uZScgc3Ryb2tlPScjZTllMGQ1JyBzdHJva2Utd2lkdGg9JzEuMycgc3Ryb2tlLWxpbmVqb2luPSdyb3VuZCcvPjwvZz48L3N2Zz4=");
+  background-size: 100% 100%, 108px 108px, 186px 186px, 288px 288px;
+  background-position: center top, 0 0, 58px 74px, 124px 26px;
+  background-repeat: no-repeat, repeat, repeat, repeat;
+  border: 1.4px solid rgba(125, 96, 85, 0.4) !important;
+}
+
+/* 设置九宫格那个面板比较小，星星铺密一点，不然太空 */
+.settings-panel {
+  background-size: 100% 100%, 74px 74px, 122px 122px, 196px 196px;
+  background-position: center top, 0 0, 32px 46px, 88px 18px;
+}
+
+/* ---------- 3. 弹窗 ---------- */
+.dict-modal-content,
+.pat-modal {
+  background-color: var(--ui-paper) !important;
+  border: 1.4px solid rgba(125, 96, 85, 0.4) !important;
+}
+
+/* ---------- 4. 卡片：米白到极淡绿的竖向渐变，没有硬边 ---------- */
+.system-fold-card,
+.data-fold-card,
+.group-card,
+.pat-card {
+  background: linear-gradient(180deg, var(--ui-card-top) 0%, var(--ui-card-bottom) 100%) !important;
+  border: 1.3px solid var(--ui-card-line) !important;
+}
+
+/* 卡片头去掉原来的绿底，跟着卡片一起渐变 */
+.system-fold-header,
+.data-fold-header,
+.group-header {
+  background: transparent !important;
+}
+
+/* ---------- 5. 内层浅色小块 ---------- */
+.system-card-block {
+  background: var(--ui-inner) !important;
+  border: 1px dashed rgba(125, 96, 85, 0.22) !important;
+}
+
+/* ---------- 6. 所有输入框 ---------- */
+.system-input-field,
+.group-search-input,
+.dict-search-input,
+.date-input-field,
+.css-code-area,
+.pat-input,
+.dict-modal-input,
+.dict-modal-textarea {
+  background: #fffefb !important;
+  border-color: rgba(125, 96, 85, 0.26) !important;
+}
+
+/* ---------- 7. 次要按钮：米白纸片 ---------- */
+.cute-btn,
+.btn-system-back,
+.btn-dict-back,
+.btn-data-back,
+.btn-pat-back,
+.btn-pat-close,
+.cute-file-btn,
+.pat-mini-btn,
+.pat-side-btn {
+  background: var(--ui-btn) !important;
+}
+
+/* ---------- 8. 主要按钮：渐变，整个界面的重点色 ---------- */
+.primary-save-btn,
+#btn-add-group,
+#btn-pat-add {
+  background: linear-gradient(180deg, var(--ui-btn-main-top) 0%, var(--ui-btn-main-bottom) 100%) !important;
+  border-color: rgba(125, 96, 85, 0.45) !important;
+}
+
+/* ---------- 9. 删除类按钮 ---------- */
+.cute-btn.danger,
+#btn-pat-reset {
+  background: var(--ui-btn-danger) !important;
+}
+
+/* ---------- 10. 选中的预设 / 选中的分页 ---------- */
+.preset-card.active,
+.pat-side-btn.active {
+  background: var(--ui-btn-main-top) !important;
+  border-color: rgba(125, 96, 85, 0.45) !important;
+}
+
+/* ---------- 11. 聊天底部输入框 ---------- */
+.chat-input {
+  background-color: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
