@@ -209,14 +209,7 @@
     };
   }
 
-  function escapeHtml(str) {
-    return String(str == null ? '' : str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
+  // escapeHtml 已收拢到 js/modal.js（全局函数）；这里只留转义单引号的辅助函数
   function escapeAttr(str) {
     return escapeHtml(str).replace(/'/g, '&#39;');
   }

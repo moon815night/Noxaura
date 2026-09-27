@@ -389,49 +389,6 @@
       return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    function escapeHtml(str) {
-      return (str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function showConfirmModal(title, message, onConfirm) {
-      const overlay = document.createElement('div');
-      overlay.className = 'dict-modal show';
-      overlay.innerHTML = `
-        <div class="dict-modal-content">
-          <div class="dict-modal-title">${escapeHtml(title)}</div>
-          <div style="font-size:13px; color:#2e1f19; line-height:1.4;">${escapeHtml(message)}</div>
-          <div class="dict-modal-footer">
-            <button class="cute-btn" id="modal-cancel" style="background:#e0ede5;">取消</button>
-            <button class="cute-btn danger" id="modal-ok">确认</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      overlay.querySelector('#modal-cancel').onclick = () => overlay.remove();
-      overlay.querySelector('#modal-ok').onclick = () => {
-        overlay.remove();
-        onConfirm();
-      };
-    }
-
-    function alertModal(msg) {
-      const overlay = document.createElement('div');
-      overlay.className = 'dict-modal show';
-      overlay.innerHTML = `
-        <div class="dict-modal-content">
-          <div class="dict-modal-title">提示</div>
-          <div style="font-size:13px; color:#2e1f19;">${escapeHtml(msg)}</div>
-          <div class="dict-modal-footer">
-            <button class="cute-btn" id="modal-ok">知道了</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      overlay.querySelector('#modal-ok').onclick = () => overlay.remove();
-    }
+    // escapeHtml / showConfirmModal / alertModal 已收拢到 js/modal.js（全局函数）
   });
 })(window);

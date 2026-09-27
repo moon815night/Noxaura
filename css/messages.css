@@ -1,0 +1,305 @@
+/**
+ * 聊天消息区：多选栏 / 消息气泡 / 日期分割线 / 引用框 / 注释框 / 长按菜单
+ * 由原 components.css 按功能拆分而来（2026-09-27 分类整理）
+ */
+
+/* 多选删除顶部栏 */
+.multi-select-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-bar-bg);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(119, 92, 85, 0.25);
+  z-index: 15;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+.multi-select-bar.show {
+  display: flex;
+}
+
+/* ==================== 聊天区与消息气泡 ==================== */
+.chat-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px;
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 微信 + 纯色手绘风 顶部居中日期分割线 */
+.chat-date-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 6px 0;
+  width: 100%;
+}
+
+.chat-date-divider span {
+  font-size: 11px;
+  color: var(--color-stroke-bubble);
+  background: rgba(220, 250, 226, 0.65);
+  border: 1.2px dashed rgba(119, 92, 85, 0.35);
+  padding: 3px 12px;
+  border-radius: 12px;
+  user-select: none;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  position: relative;
+  user-select: none;
+}
+
+.msg-row.me {
+  flex-direction: row-reverse;
+}
+
+/* 原话 2 秒高亮动画 */
+@keyframes msgHighlightFlash {
+  0%, 100% { background-color: transparent; }
+  20%, 80% { background-color: rgba(164, 222, 185, 0.5); }
+}
+.msg-row.highlight-flash .bubble-wrapper {
+  animation: msgHighlightFlash 2s ease-in-out;
+  border-radius: 12px;
+}
+
+/* 多选框 */
+.msg-select-checkbox {
+  display: none;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+.multi-select-mode .msg-select-checkbox {
+  display: block;
+}
+
+.msg-column {
+  display: flex;
+  flex-direction: column;
+  max-width: 72%;
+}
+
+.msg-row.me .msg-column {
+  align-items: flex-end;
+}
+
+.msg-row.opponent .msg-column {
+  align-items: flex-start;
+}
+
+.msg-time {
+  font-size: 10.5px;
+  color: var(--color-stroke-bubble);
+  margin-top: 3px;
+  padding: 0 2px;
+  user-select: none;
+  font-weight: 500;
+  line-height: 1;
+  font-family: "Chalkboard SE", "Comic Sans MS", "Yuanti SC", "华文细黑", cursive, sans-serif;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.msg-row.opponent .avatar {
+  background-color: var(--color-avatar-opponent-bg);
+}
+
+.msg-row.me .avatar {
+  background-color: var(--color-avatar-me-bg);
+}
+
+.bubble-wrapper {
+  position: relative;
+  width: fit-content;
+  min-width: 40px;
+  max-width: 100%;
+}
+
+.bubble {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-text-main);
+  word-break: break-word;
+  z-index: 1;
+}
+
+.msg-row.opponent .bubble {
+  background-color: var(--color-bubble-opponent);
+  border-bottom-left-radius: 2px;
+}
+
+.msg-row.me .bubble {
+  background-color: var(--color-bubble-me);
+  border-bottom-right-radius: 2px;
+}
+
+/* 消息气泡内引用框 */
+.bubble-quote {
+  font-size: 11.5px;
+  color: #775c55;
+  background: rgba(119, 92, 85, 0.1);
+  border-left: 3px solid #775c55;
+  border-radius: 4px;
+  padding: 4px 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  word-break: break-all;
+}
+.bubble-quote.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 消息注释框：浅白背景，棕色边框 */
+.bubble-annotation {
+  font-size: 11.5px;
+  color: #2e1f19;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.2px solid #775c55;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin-top: 6px;
+  cursor: pointer;
+  word-break: break-all;
+}
+.bubble-annotation.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bubble-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 2;
+}
+
+.bubble-svg path {
+  fill: none;
+  stroke: var(--color-stroke-bubble);
+  stroke-width: 1.5px;
+  stroke-dasharray: 24 4 2 4 7 4 15 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 照片消息与表情消息 */
+.bubble-wrapper.image-wrapper .bubble-svg,
+.bubble-wrapper.sticker-wrapper .bubble-svg {
+  display: none;
+}
+
+.bubble.bubble-image,
+.bubble.bubble-sticker {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bubble-image .bubble-quote,
+.bubble-sticker .bubble-quote {
+  margin: 4px 4px 2px 4px;
+  background: rgba(238, 248, 240, 0.95);
+  border-left: 3px solid #775c55;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.bubble-image .bubble-annotation,
+.bubble-sticker .bubble-annotation {
+  margin: 2px 4px 4px 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.2px solid #775c55;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.bubble-image-img {
+  display: block;
+  max-width: 200px;
+  max-height: 240px;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* 长按浮动菜单遮罩 */
+.context-menu-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 350;
+  display: none;
+}
+.context-menu-overlay.show {
+  display: block;
+}
+.context-menu {
+  position: absolute;
+  background: #fbfefc;
+  border: 1.5px solid var(--color-stroke-bubble);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(46, 31, 25, 0.18);
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  z-index: 351;
+  transform: translate(-50%, -100%);
+}
+.context-menu-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  background: #eef8f0;
+  border: 1px solid var(--color-stroke-bubble);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.context-menu-btn:active {
+  background: #d9f0e1;
+}
+.context-menu-btn.danger {
+  background: #e5dad4;
+}
+
