@@ -8,6 +8,7 @@
   const STICKER_KEY = 'night_glow_stickers';
   const CHAT_KEY = 'night_glow_chat_history';
   const SYSTEM_KEY = 'night_glow_system_settings';
+  const PAT_KEY = 'night_glow_pat_settings';
 
   function loadData(key) {
     try {
@@ -218,6 +219,99 @@
     }
   };
 
+  /* ==================== 拍一拍：双方各自一套内容 ==================== */
+  // 文案里的 {我} / {他} 会在使用时自动替换成当前昵称
+  const defaultPatState = {
+    mine: [
+      { id: 'pat_m1', text: '{我} 拍了拍 {他}' },
+      { id: 'pat_m2', text: '{我} 拍了拍 {他} 的肩膀' },
+      { id: 'pat_m3', text: '{我} 拍了拍 {他} 的小脑袋' },
+      { id: 'pat_m4', text: '{我} 拍了拍 {他} 并递上一杯热茶' },
+      { id: 'pat_m5', text: '{我} 拍了拍 {他} 的手心' }
+    ],
+    his: [
+      { id: 'pat_h1', text: '{他} 拍了拍 {我}' },
+      { id: 'pat_h2', text: '{他} 拍了拍 {我} 的肩膀' },
+      { id: 'pat_h3', text: '{他} 拍了拍 {我} 的小脑袋' },
+      { id: 'pat_h4', text: '{他} 揉了揉 {我} 的头发' },
+      { id: 'pat_h5', text: '{他} 递来一杯热茶，拍了拍 {我}' }
+    ]
+  };
+
+  function clonePatList(list) {
+    return list.map(item => ({ id: item.id, text: item.text }));
+  }
+
+  function normalizePat(raw) {
+    const src = raw || {};
+    const pick = (arr) => (Array.isArray(arr) ? arr.filter(i => i && typeof i.text === 'string').map(i => ({ id: i.id || ('pat_' + Date.now() + '_' + Math.floor(Math.random() * 1000)), text: i.text })) : null);
+    return {
+      mine: pick(src.mine) || clonePatList(defaultPatState.mine),
+      his: pick(src.his) || clonePatList(defaultPatState.his)
+    };
+  }
+
+  let patSettings = normalizePat(loadData(PAT_KEY));
+
+  global.PatState = {
+    get() { return patSettings; },
+    getMine() { return patSettings.mine; },
+    getHis() { return patSettings.his; },
+    getList(side) { return side === 'his' ? patSettings.his : patSettings.mine; },
+    getDefaultList(side) { return clonePatList(side === 'his' ? defaultPatState.his : defaultPatState.mine); },
+
+    // 把 {我} / {他} 换成当前昵称
+    resolveText(text) {
+      const names = (global.SystemState && global.SystemState.getSettings().nicknames) || { me: '我', opponent: '顾时夜' };
+      return String(text == null ? '' : text)
+        .replace(/\{我\}/g, names.me || '我')
+        .replace(/\{他\}/g, names.opponent || '顾时夜');
+    },
+
+    // 随机取一条（已替换昵称），没有内容返回空字符串
+    getRandomText(side) {
+      const list = this.getList(side);
+      if (!list.length) return '';
+      return this.resolveText(list[Math.floor(Math.random() * list.length)].text);
+    },
+
+    add(side, text) {
+      const t = String(text == null ? '' : text).trim();
+      if (!t) return false;
+      this.getList(side).push({ id: 'pat_' + Date.now() + '_' + Math.floor(Math.random() * 1000), text: t });
+      this.save();
+      return true;
+    },
+
+    update(side, id, text) {
+      const t = String(text == null ? '' : text).trim();
+      const item = this.getList(side).find(i => i.id === id);
+      if (!item || !t) return false;
+      item.text = t;
+      this.save();
+      return true;
+    },
+
+    remove(side, id) {
+      if (side === 'his') patSettings.his = patSettings.his.filter(i => i.id !== id);
+      else patSettings.mine = patSettings.mine.filter(i => i.id !== id);
+      this.save();
+    },
+
+    reset(side) {
+      if (side === 'his') patSettings.his = clonePatList(defaultPatState.his);
+      else patSettings.mine = clonePatList(defaultPatState.mine);
+      this.save();
+    },
+
+    replaceAll(raw) {
+      patSettings = normalizePat(raw);
+      this.save();
+    },
+
+    save() { saveData(PAT_KEY, patSettings); }
+  };
+
   global.ChatState = {
     getHistory() { return chatHistory; },
     addMessage(msg) {
@@ -262,6 +356,7 @@
         dictGroups: groups,
         stickers: stickerState,
         system: systemSettings,
+        pat: patSettings,
         chatHistory: chatHistory
       };
       return JSON.stringify(allData, null, 2);
@@ -277,6 +372,9 @@
         }
         if (parsed.system) {
           global.SystemState.setSettings(parsed.system);
+        }
+        if (parsed.pat) {
+          global.PatState.replaceAll(parsed.pat);
         }
         if (parsed.chatHistory && Array.isArray(parsed.chatHistory)) {
           global.ChatState.setHistory(parsed.chatHistory);
@@ -296,6 +394,7 @@
         colorPresets: ['#775c55', '#a4deb9', '#d2c0ba']
       });
       global.SystemState.setSettings(defaultSystemState);
+      global.PatState.replaceAll(defaultPatState);
       global.ChatState.clearHistory();
     }
   };

@@ -670,9 +670,11 @@
 }
 
 .settings-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  column-gap: 20px;
+  row-gap: 16px;
   justify-content: center;
-  gap: 20px;
   margin-top: 10px;
   width: 100%;
 }

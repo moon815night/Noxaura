@@ -128,6 +128,13 @@
       const cMax = st.replyCountMax || 3;
       const count = Math.floor(Math.random() * (cMax - cMin + 1)) + cMin;
 
+      // 「他的」拍一拍：对方回复时有 25% 概率以拍一拍形式出现
+      // 内容取自 设置 → 拍一拍 → 「他的」（不想让他拍你，就把他那一侧清空）
+      let hisPatText = '';
+      if (window.PatState && Math.random() < 0.25) {
+        hisPatText = window.PatState.getRandomText('his');
+      }
+
       setTimeout(() => {
         let replies = [];
         if (window.StickerState) {
@@ -152,6 +159,11 @@
 
         replies.forEach((item, index) => {
           setTimeout(() => {
+            // 第一条换成「他的」拍一拍
+            if (index === 0 && hisPatText) {
+              appendPatMessage(chatContent, hisPatText, null, true, null, false);
+              return;
+            }
             const qData = (index === 0) ? replyQuote : null;
             if (item.type === 'sticker') {
               appendStickerMessage(chatContent, item.val, false, null, true, qData);
@@ -470,34 +482,34 @@
       if (!patBody) return;
       patBody.innerHTML = '';
 
-      const s = window.SystemState ? window.SystemState.getSettings() : null;
-      const meName = (s && s.nicknames && s.nicknames.me) ? s.nicknames.me : '我';
-      const oppName = (s && s.nicknames && s.nicknames.opponent) ? s.nicknames.opponent : '顾时夜';
+      // 「我的」内容由 设置 → 拍一拍 管理，这里只负责展示和发送
+      const list = (window.PatState && window.PatState.getMine()) || [];
 
-      const defaultPatList = [
-        `${meName} 拍了拍 ${oppName}`,
-        `${meName} 拍了拍 ${oppName} 的肩膀`,
-        `${meName} 拍了拍 ${oppName} 的小脑袋`,
-        `${meName} 拍了拍 ${oppName} 并递上一杯热茶`,
-        `${meName} 拍了拍 ${oppName} 的手心`
-      ];
+      if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'pat-empty-hint';
+        empty.textContent = '还没有内容，去「设置 → 拍一拍」里添加吧';
+        patBody.appendChild(empty);
+        return;
+      }
 
-      defaultPatList.forEach(text => {
-        const item = document.createElement('div');
-        item.className = 'pat-item';
-        item.textContent = text;
-        item.addEventListener('click', () => {
+      list.forEach((item) => {
+        const text = window.PatState.resolveText(item.text);
+        const el = document.createElement('div');
+        el.className = 'pat-item';
+        el.textContent = text;
+        el.addEventListener('click', () => {
           if (patPanel) patPanel.classList.remove('open');
           if (featurePanel) featurePanel.classList.remove('open');
           if (btnKaomoji) btnKaomoji.classList.remove('active');
           if (bottomBar) bottomBar.classList.remove('feature-open');
 
-          appendPatMessage(chatContent, text);
+          appendPatMessage(chatContent, text, null, true, null, true);
           if (!window.isContinuousMode()) {
             triggerOpponentReply();
           }
         });
-        patBody.appendChild(item);
+        patBody.appendChild(el);
       });
     }
 

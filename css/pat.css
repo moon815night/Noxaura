@@ -1,0 +1,372 @@
+/* ==================== 拍一拍 管理子页面样式（清新手绘风 · 绿棕拼色） ==================== */
+
+.pat-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  box-sizing: border-box;
+}
+
+.pat-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 绿→棕 拼色磨砂面板 */
+.pat-manage-panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 85vh;
+  max-height: 720px;
+  background: linear-gradient(158deg, rgba(238, 248, 240, 0.96) 0%, rgba(244, 250, 245, 0.96) 48%, rgba(233, 223, 217, 0.96) 100%);
+  border: 1.5px solid var(--color-stroke-bubble);
+  border-radius: 22px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 14px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(46, 31, 25, 0.15);
+  transform: scale(0.95);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.pat-overlay.show .pat-manage-panel {
+  transform: scale(1);
+}
+
+/* ---------- 顶栏 ---------- */
+.pat-manage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(119, 92, 85, 0.35);
+  flex-shrink: 0;
+}
+
+.pat-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-stroke-bubble);
+  letter-spacing: 0.5px;
+}
+
+.pat-title-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.btn-pat-back {
+  width: 36px;
+  height: 36px;
+  border: 1.2px solid var(--color-stroke-bubble);
+  border-radius: 12px;
+  background: #eef8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.btn-pat-back:active {
+  transform: scale(0.93);
+  background-color: #d9f0e1;
+}
+
+.btn-pat-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------- 顶栏「我的 / 他的」两个按钮 ---------- */
+.pat-side-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1.2px dashed rgba(119, 92, 85, 0.35);
+  flex-shrink: 0;
+}
+
+.pat-side-btn {
+  height: 30px;
+  min-width: 62px;
+  padding: 0 14px;
+  border: 1.2px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #775c55;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.pat-side-btn:active {
+  transform: scale(0.95);
+}
+
+/* 我的 = 绿 */
+.pat-side-btn.active[data-side="mine"] {
+  background: linear-gradient(180deg, rgba(220, 250, 226, 0.95) 0%, rgba(174, 224, 197, 0.95) 100%);
+  border-color: #8fcfae;
+  color: #2b4a38;
+  box-shadow: 0 2px 6px rgba(119, 160, 136, 0.22);
+}
+
+/* 他的 = 棕 */
+.pat-side-btn.active[data-side="his"] {
+  background: linear-gradient(180deg, rgba(242, 232, 228, 0.95) 0%, rgba(210, 192, 186, 0.95) 100%);
+  border-color: #bda79f;
+  color: #4a3a34;
+  box-shadow: 0 2px 6px rgba(160, 130, 120, 0.22);
+}
+
+/* ---------- 内容区 ---------- */
+.pat-manage-body {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pat-manage-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pat-manage-body::-webkit-scrollbar-thumb {
+  background: rgba(119, 92, 85, 0.3);
+  border-radius: 4px;
+}
+
+/* 说明小卡片 */
+.pat-tip {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #775c55;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1.2px dashed rgba(119, 92, 85, 0.3);
+  border-radius: 13px;
+  padding: 8px 11px;
+  flex-shrink: 0;
+}
+
+.pat-tip b {
+  color: #2e1f19;
+}
+
+.pat-tip .pat-key {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgba(220, 250, 226, 0.85);
+  color: #31614a;
+  font-weight: 700;
+}
+
+/* 新增一行 */
+.pat-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pat-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.2px solid var(--color-input-border);
+  border-radius: 12px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--color-text-main);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pat-input:focus {
+  border-color: #a4deb9;
+  box-shadow: 0 0 0 3px rgba(164, 222, 185, 0.3);
+}
+
+.pat-input::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+/* 内容列表 */
+.pat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pat-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1.2px solid rgba(119, 92, 85, 0.28);
+  border-radius: 14px;
+  padding: 9px 12px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.pat-card:hover {
+  border-color: rgba(119, 92, 85, 0.5);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.pat-card-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text-main);
+  word-break: break-word;
+}
+
+.pat-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* 圆润小按钮 */
+.pat-mini-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1.2px solid var(--color-stroke-bubble);
+  border-radius: 9px;
+  background: #eef8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.pat-mini-btn:active {
+  transform: scale(0.9);
+  background-color: #d9f0e1;
+}
+
+.pat-mini-btn.danger {
+  background: #e8ded9;
+}
+
+.pat-mini-btn.danger:active {
+  background-color: #d5c3ba;
+}
+
+/* 空状态 */
+.pat-empty {
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #9a8b85;
+  padding: 24px 14px;
+  border: 1.2px dashed rgba(119, 92, 85, 0.3);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 底部 */
+.pat-manage-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 1px dashed rgba(119, 92, 85, 0.35);
+  flex-shrink: 0;
+}
+
+.pat-manage-footer .cute-btn,
+.pat-manage-body .cute-btn {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* 弹窗里的小提示 */
+.pat-modal-hint {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #775c55;
+}
+
+.pat-modal-hint b {
+  color: #31614a;
+}
+
+/* ---------- 功能栏「拍一拍」快发面板的空状态 ---------- */
+.pat-empty-hint {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #9a8b85;
+  text-align: center;
+  padding: 18px 12px;
+  border: 1.2px dashed rgba(119, 92, 85, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- 聊天区拍一拍提示条：我的=绿 / 他的=棕 ---------- */
+.chat-pat-divider.mine span {
+  background: rgba(220, 250, 226, 0.7);
+  border-color: rgba(119, 92, 85, 0.3);
+}
+
+.chat-pat-divider.his span {
+  background: rgba(233, 223, 217, 0.8);
+  border-color: rgba(170, 143, 134, 0.45);
+  color: #5a463f;
+}
