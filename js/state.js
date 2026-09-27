@@ -52,7 +52,7 @@
       ]
     },
     fonts: { globalFontSize: 14, fontCustom: '' },
-    theme: { topBottomBg: '#eef8f0', topBottomImg: '', css: '' },
+    theme: { topBottomBg: '#e8f4ec', topBottomImg: '', css: '' },
     chatBg: {
       type: 'gradient', color1: '#dcfae2', color2: '#fbfefc', gradientType: 'radial', image: '',
       activePreset: 0,
